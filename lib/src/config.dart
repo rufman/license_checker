@@ -38,10 +38,7 @@ class Config {
       return throw FormatException(
           '`permittedLicenses` is not defined as a list');
     }
-    if (rejectedLicenses == null) {
-      return throw FormatException('`rejectedLicenses` not defined');
-    }
-    if (rejectedLicenses is! List) {
+    if (rejectedLicenses != null && rejectedLicenses is! List) {
       return throw FormatException(
           '`rejectedLicenses` is not defined as a list');
     }
