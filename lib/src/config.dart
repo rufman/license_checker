@@ -40,7 +40,8 @@ class Config {
     }
     if (rejectedLicenses != null && rejectedLicenses is! List) {
       return throw FormatException(
-          '`rejectedLicenses` is not defined as a list');
+        '`rejectedLicenses` is not defined as a list',
+      );
     }
 
     List<String> stringLicenses =

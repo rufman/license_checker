@@ -10,6 +10,13 @@ import 'package:license_checker/src/config.dart';
 
 const String noFileLicense = 'no-file';
 const String unknownLicense = 'unknown-license';
+const String unknownCopyright = 'unknown-copyright';
+const String unknownSource = 'unknown-source';
+RegExp coprightRegex = RegExp(
+  r'Copyright\s(\(c\)\s)*(?<date>[0-9]{4})(?<holders>.+)\n',
+  caseSensitive: false,
+  multiLine: false,
+);
 
 final _licenseFileNames = [
   ...textFileNameCandidates('LICENSE'),
@@ -74,7 +81,12 @@ class PackageConfig {
       throw FormatException();
     }
     for (Object p in packagesSource) {
-      packages.add(Package.fromJson(config: config, source: p));
+      Package pkg = Package.fromJson(config: config, source: p);
+      if (pkg.name == pubspec.name) {
+        // Don't add or check self
+        continue;
+      }
+      packages.add(pkg);
     }
 
     return PackageConfig._(
@@ -182,25 +194,60 @@ class Package {
     );
   }
 
-  /// The license name associated with the package
-  Future<String> get licenseName async {
-    String lname = noFileLicense;
-
+  File? get licenseFile {
     for (String fileName in _licenseFileNames) {
       File file = File(join(rootUri, fileName));
       if (file.existsSync()) {
-        String content = await file.readAsString();
-        pana_license_detector.Result res =
-            await pana_license_detector.detectLicense(content, 0.9);
-        // Just the first match (highest probability) as the license.
-        lname = res.matches.isNotEmpty
-            ? res.matches.first.identifier
-            : unknownLicense;
-        break;
+        return file;
       }
     }
 
-    return lname;
+    return null;
+  }
+
+  /// The license name associated with the package
+  Future<String> get licenseName async {
+    if (licenseFile == null) {
+      return noFileLicense;
+    }
+
+    String content = await licenseFile!.readAsString();
+    pana_license_detector.Result res =
+        await pana_license_detector.detectLicense(content, 0.9);
+    // Just the first match (highest probability) as the license.
+    return res.matches.isNotEmpty
+        ? res.matches.first.identifier
+        : unknownLicense;
+  }
+
+  Future<String> get copyright async {
+    if (licenseFile == null) {
+      return unknownCopyright;
+    }
+
+    String content = await licenseFile!.readAsString();
+    RegExpMatch? match = coprightRegex.firstMatch(content);
+    String? copyrightText = (match?.namedGroup('date') ?? '') +
+        (match?.namedGroup('holders') ?? unknownCopyright);
+
+    return copyrightText;
+  }
+
+  /// Returns the location where the source can be found
+  String get sourceLocation {
+    String sourceLocation = unknownSource;
+    File file = File(join(rootUri, 'pubspec.yaml'));
+    if (!file.existsSync()) {
+      return throw FileSystemException(
+        'pubspec.yaml file not found in package $name.',
+      );
+    }
+
+    sourceLocation =
+        Pubspec.parseYaml(file.readAsStringSync()).repositoryOrHomepage ??
+            unknownSource;
+
+    return sourceLocation;
   }
 
   LicenseStatus? _checkApprovedPackages(String lName) {

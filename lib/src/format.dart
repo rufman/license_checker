@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:barbecue/barbecue.dart';
 import 'package:colorize/colorize.dart';
 
 import 'package:license_checker/src/package.dart';
 
 /// Formats package licenses as a table.
-Table formatTable(List<Row> rows) {
+Table formatLicenseTable(List<Row> rows) {
   return Table(
     tableStyle: TableStyle(border: true),
     header: TableSection(
@@ -27,6 +29,67 @@ Table formatTable(List<Row> rows) {
       rows: rows,
     ),
   );
+}
+
+/// Formats a table that shows the output that needs to be verified before
+/// generating the disclaimer
+Table formatDisclaimerTable(List<Row> rows) {
+  return Table(
+    tableStyle: TableStyle(border: true),
+    header: TableSection(
+      rows: [
+        Row(
+          cells: [
+            Cell(
+              Colorize('Package Name').bold().toString(),
+              style:
+                  CellStyle(alignment: TextAlignment.TopRight, paddingRight: 2),
+            ),
+            Cell(Colorize('License').bold().toString()),
+            Cell(Colorize('Detected Copyright').bold().toString()),
+            Cell(Colorize('Source Download Location').bold().toString()),
+          ],
+          cellStyle: CellStyle(borderBottom: true),
+        ),
+      ],
+    ),
+    body: TableSection(
+      cellStyle: CellStyle(paddingRight: 2),
+      rows: rows,
+    ),
+  );
+}
+
+Future<String> formatDisclaimerFile(List<Package> packages) async {
+  StringBuffer disclaimer = StringBuffer();
+  for (Package package in packages) {
+    String copyright = await package.copyright;
+    File? licenseFile = package.licenseFile;
+    String? licenseText = await licenseFile?.readAsString();
+
+    disclaimer.writeln(
+      'The following software may be included in this product: ${package.name}',
+    );
+    disclaimer.writeln(
+        'A copy of the source code may be downloaded from: ${package.sourceLocation}');
+
+    if (licenseText != null || copyright != unknownCopyright) {
+      disclaimer.writeln();
+      disclaimer.writeln(
+        'This software contains the following license and notice below:',
+      );
+      if (copyright != unknownCopyright) {
+        disclaimer.writeln('Copyright (c) $copyright');
+      }
+      if (licenseText != null) {
+        // Remove copyright from license text since it's displayed above.
+        disclaimer.writeln(licenseText.replaceFirst(coprightRegex, ''));
+      }
+      disclaimer.writeln();
+    }
+  }
+
+  return disclaimer.toString();
 }
 
 /// Formats the name of a license based on organization rules.
@@ -58,8 +121,36 @@ Colorize formatLicenseName(String name, LicenseStatus licenseStatus) {
   }
 }
 
+/// Formats the copyright to highlight issues found
+Colorize formatCopyright(String copyright) {
+  switch (copyright) {
+    case unknownCopyright:
+      {
+        return licenseErrorFormat(copyright);
+      }
+    default:
+      {
+        return Colorize(copyright).default_slyle();
+      }
+  }
+}
+
+/// Formats the source location to highlight issues found
+Colorize formatSource(String location) {
+  switch (location) {
+    case unknownSource:
+      {
+        return licenseErrorFormat(location);
+      }
+    default:
+      {
+        return Colorize(location).default_slyle();
+      }
+  }
+}
+
 /// Formats a license row.
-Row formatRow({
+Row formatLicenseRow({
   required String packageName,
   required String licenseName,
   required LicenseStatus licenseStatus,
@@ -68,6 +159,23 @@ Row formatRow({
     cells: [
       Cell(packageName, style: CellStyle(alignment: TextAlignment.TopRight)),
       Cell(formatLicenseName(licenseName, licenseStatus).toString()),
+    ],
+  );
+}
+
+/// Formats a copyright row.
+Row formatDisclaimerRow({
+  required String packageName,
+  required String licenseName,
+  required String copyright,
+  required String sourceLocation,
+}) {
+  return Row(
+    cells: [
+      Cell(packageName, style: CellStyle(alignment: TextAlignment.TopRight)),
+      Cell(licenseName),
+      Cell(formatCopyright(copyright).toString()),
+      Cell(formatSource(sourceLocation).toString()),
     ],
   );
 }
