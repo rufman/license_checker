@@ -13,10 +13,8 @@ File packageConfigFile = File('.dart_tool/package_config.json');
 void main(List<String> arguments) async {
   exitCode = 0;
 
-  CommandRunner<int> cmd = CommandRunner<int>(
-    'license_checker',
-    'A command line tool for checking licenses.',
-  )..addCommand(CheckLicenses());
+  LicenseCommandRunner cmd = LicenseCommandRunner()
+    ..addCommand(CheckLicenses());
 
   int? errors = await cmd.run(arguments);
   if (errors != null) {
@@ -24,14 +22,12 @@ void main(List<String> arguments) async {
   }
 }
 
-class CheckLicenses extends Command<int> {
-  @override
-  final String name = 'check-licenses';
-  @override
-  final String description =
-      'Checks licenses of all dependencies for compliance.';
-
-  CheckLicenses() {
+class LicenseCommandRunner extends CommandRunner<int> {
+  LicenseCommandRunner()
+      : super(
+          'license_checker',
+          'A command line tool for checking licenses.',
+        ) {
     argParser
       ..addFlag(
         'direct',
@@ -47,13 +43,21 @@ class CheckLicenses extends Command<int> {
         mandatory: true,
       );
   }
+}
+
+class CheckLicenses extends Command<int> {
+  @override
+  final String name = 'check-licenses';
+  @override
+  final String description =
+      'Checks licenses of all dependencies for compliance.';
 
   @override
   Future<int> run() async {
     PackageConfig packageConfig;
     List<Row> rows = [];
-    bool showDirectDepsOnly = argResults?['direct'];
-    String configPath = argResults?['config'];
+    bool showDirectDepsOnly = globalResults?['direct'];
+    String configPath = globalResults?['config'];
 
     printInfo('Loading config from $configPath');
 
