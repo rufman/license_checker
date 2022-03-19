@@ -8,6 +8,7 @@ import 'package:path/path.dart';
 import 'package:license_checker/src/config.dart';
 import 'package:license_checker/src/format.dart';
 import 'package:license_checker/src/package.dart';
+import 'package:license_checker/src/package_config.dart';
 
 File pubspecFile = File('pubspec.yaml');
 File packageConfigFile = File('.dart_tool/package_config.json');
