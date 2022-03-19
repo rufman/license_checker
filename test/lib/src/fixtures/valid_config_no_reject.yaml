@@ -1,0 +1,6 @@
+permittedLicenses:
+  - Apache-2.0
+
+approvedPackages:
+  GPL:
+    - mlb

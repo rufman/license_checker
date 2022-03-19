@@ -1,0 +1,6 @@
+rejectedLicenses:
+  - MIT
+
+approvedPackages:
+  GPL:
+    - mlb

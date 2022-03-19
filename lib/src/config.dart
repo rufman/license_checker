@@ -46,10 +46,12 @@ class Config {
       );
     }
 
+    List<String> stringRejectLicenses = [];
     List<String> stringLicenses =
         permittedLicenses.whereType<String>().toList();
-    List<String> stringRejectLicenses =
-        permittedLicenses.whereType<String>().toList();
+    if (rejectedLicenses != null && rejectedLicenses is List) {
+      stringRejectLicenses = rejectedLicenses.whereType<String>().toList();
+    }
 
     Map<String, List<String>> checkedApprovedPackages = {};
     if (approvedPackages != null) {
