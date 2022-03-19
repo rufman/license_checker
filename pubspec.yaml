@@ -17,6 +17,7 @@ dependencies:
 
 dev_dependencies:
   lints: ^1.0.0
+  test: ^1.20.2
 
 executables:
   lic_ck: license_checker
