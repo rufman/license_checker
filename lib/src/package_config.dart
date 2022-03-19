@@ -17,13 +17,6 @@ class PackageConfig {
   /// The liscense checker config. Includes permitted licenses and approved packages.
   final Config config;
 
-  /// Constructor for package config
-  PackageConfig({
-    required this.pubspec,
-    required this.packages,
-    required this.config,
-  });
-
   PackageConfig._({
     required this.pubspec,
     required this.packages,

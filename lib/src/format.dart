@@ -60,6 +60,7 @@ Table formatDisclaimerTable(List<Row> rows) {
   );
 }
 
+/// Formats the output of the disclaimer file.
 Future<String> formatDisclaimerFile(List<Package> packages) async {
   StringBuffer disclaimer = StringBuffer();
   for (Package package in packages) {
@@ -71,7 +72,8 @@ Future<String> formatDisclaimerFile(List<Package> packages) async {
       'The following software may be included in this product: ${package.name}',
     );
     disclaimer.writeln(
-        'A copy of the source code may be downloaded from: ${package.sourceLocation}');
+      'A copy of the source code may be downloaded from: ${package.sourceLocation}',
+    );
 
     if (licenseText != null || copyright != unknownCopyright) {
       disclaimer.writeln();

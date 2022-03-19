@@ -59,14 +59,8 @@ class CheckLicenses extends Command<int> {
   @override
   Future<int> run() async {
     List<Row> rows = [];
-    bool showDirectDepsOnly = globalResults?['direct'];
 
     Config config = _loadConfig(globalResults);
-
-    printInfo(
-      'Checking ${showDirectDepsOnly ? 'direct' : 'all'} dependencies...',
-    );
-
     await _processPackage(config, globalResults, (Package package) async {
       rows.add(
         formatLicenseRow(
@@ -108,7 +102,6 @@ class GenerateDisclaimer extends Command<int> {
 
   @override
   Future<int> run() async {
-    bool showDirectDepsOnly = globalResults?['direct'];
     String disclaimerName = argResults?['file'];
     String outputPath = argResults?['path'];
     Config config = _loadConfig(globalResults);
@@ -184,6 +177,10 @@ Future<int> _processPackage(
   ProcessFunction processFn,
 ) async {
   bool showDirectDepsOnly = args?['direct'];
+
+  printInfo(
+    'Checking ${showDirectDepsOnly ? 'direct' : 'all'} dependencies...',
+  );
   try {
     PackageConfig packageConfig = PackageConfig.fromFile(
       pubspecFile: pubspecFile,

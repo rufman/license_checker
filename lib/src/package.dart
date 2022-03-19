@@ -1,16 +1,26 @@
 import 'dart:io';
 
 import 'package:pana/pana.dart';
+// ignore: implementation_imports
 import 'package:pana/src/license_detection/license_detector.dart'
     as pana_license_detector;
 import 'package:path/path.dart';
 
 import 'package:license_checker/src/config.dart';
 
+/// Placeholder for when no license file is found.
 const String noFileLicense = 'no-file';
+
+/// Placeholder for when the license is not recognized,
 const String unknownLicense = 'unknown-license';
+
+/// Placeholder for when the copyright is no known.
 const String unknownCopyright = 'unknown-copyright';
+
+/// Placeholder for when the source location is not known.
 const String unknownSource = 'unknown-source';
+
+/// Regular expression to find and extract the copyright notice.
 RegExp coprightRegex = RegExp(
   r'Copyright\s(\(c\)\s)*(?<date>[0-9]{4})(?<holders>.+)\n',
   caseSensitive: false,
@@ -32,27 +42,37 @@ final _licenseFileNames = [
   ...textFileNameCandidates('unlicense'),
 ];
 
+/// Status of a license according to the given config.
 enum LicenseStatus {
+  /// State when the license type is not detected.
   unknown,
+
+  /// State when the package has been explicitly approved according to the config,
   approved,
+
+  /// State when the license is permmitted according to the config,
   permitted,
+
+  /// State when the license has been diallowed according to the config,
   rejected,
+
+  /// State when the license associated with the package needs approval.
   needsApproval,
+
+  /// State when no license if found.
   noLicense,
 }
 
 /// Represents a single package that is a dependency of the package we are checking.
 class Package {
-  /// The name of the package
+  /// The name of the package.
   final String name;
 
-  /// The root uri of the package
+  /// The root uri of the package.
   final String rootUri;
 
+  /// User config for the license checker.
   final Config config;
-
-  /// Constructor that creates a package.
-  Package({required this.name, required this.rootUri, required this.config});
 
   Package._({
     required this.name,
@@ -113,6 +133,8 @@ class Package {
     );
   }
 
+  /// Returns the license file associated with the package. Will check for various
+  /// different file names.
   File? get licenseFile {
     for (String fileName in _licenseFileNames) {
       File file = File(join(rootUri, fileName));
@@ -139,6 +161,7 @@ class Package {
         : unknownLicense;
   }
 
+  /// Returns the copyright notice extracted from the license file.
   Future<String> get copyright async {
     if (licenseFile == null) {
       return unknownCopyright;

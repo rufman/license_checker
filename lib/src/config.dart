@@ -2,16 +2,16 @@ import 'dart:io';
 
 import 'package:yaml/yaml.dart';
 
+/// Represents the config parsed from a config file for the license checker.
 class Config {
+  /// List of permitted license.
   final List<String> permittedLicenses;
-  final List<String> rejectedLicenses;
-  final Map<String, List<String>> approvedPackages;
 
-  Config({
-    required this.permittedLicenses,
-    required this.rejectedLicenses,
-    required this.approvedPackages,
-  });
+  /// List of licenses that are not allowed to be used by default.
+  final List<String> rejectedLicenses;
+
+  /// Packages by license that have been explicitly approved
+  final Map<String, List<String>> approvedPackages;
 
   Config._({
     required this.permittedLicenses,
@@ -19,6 +19,7 @@ class Config {
     required this.approvedPackages,
   });
 
+  /// Parses and creates config from a file
   factory Config.fromFile(File configFile) {
     if (!configFile.existsSync()) {
       return throw FileSystemException(
@@ -36,7 +37,8 @@ class Config {
     }
     if (permittedLicenses is! List) {
       return throw FormatException(
-          '`permittedLicenses` is not defined as a list');
+        '`permittedLicenses` is not defined as a list',
+      );
     }
     if (rejectedLicenses != null && rejectedLicenses is! List) {
       return throw FormatException(
@@ -59,11 +61,13 @@ class Config {
         Object packages = entry.value;
         if (license is! String) {
           return throw FormatException(
-              '`approvedPackages` must be keyed by a string license name');
+            '`approvedPackages` must be keyed by a string license name',
+          );
         }
         if (packages is! List) {
           return throw FormatException(
-              '`approvedPackages` must specified as a list');
+            '`approvedPackages` must specified as a list',
+          );
         }
 
         List<String> stringApprovedPackages =
@@ -73,7 +77,7 @@ class Config {
       }
     }
 
-    return Config(
+    return Config._(
       permittedLicenses: stringLicenses,
       approvedPackages: checkedApprovedPackages,
       rejectedLicenses: stringRejectLicenses,
