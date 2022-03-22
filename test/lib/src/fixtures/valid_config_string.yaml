@@ -1,0 +1,11 @@
+permittedLicenses:
+  - Apache-2.0
+  - 1
+
+rejectedLicenses:
+  - MIT
+  - 2
+
+approvedPackages:
+  GPL:
+    - mlb

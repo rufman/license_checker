@@ -1,0 +1,29 @@
+{
+  "configVersion": 2,
+  "packages": [
+    {
+      "name": "dodgers",
+      "rootUri": "file:///home/mlb/teams/dodgers",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "padres",
+      "rootUri": "file:///home/mlb/teams/padres",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "as",
+      "rootUri": "file:///home/mlb/teams/as",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "angeles",
+      "rootUri": "file:///home/mlb/teams/angeles",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    }
+  ]
+}

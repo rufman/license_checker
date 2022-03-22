@@ -1,0 +1,2 @@
+# Unignore files that we normal ignore for this mock pachage
+!.dart_tool

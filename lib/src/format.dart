@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:barbecue/barbecue.dart';
 import 'package:colorize/colorize.dart';
 
-import 'package:license_checker/src/package.dart';
+import 'package:license_checker/src/dependency_checker.dart';
 
 /// Formats package licenses as a table.
 Table formatLicenseTable(List<Row> rows) {
@@ -61,9 +61,9 @@ Table formatDisclaimerTable(List<Row> rows) {
 }
 
 /// Formats the output of the disclaimer file.
-Future<String> formatDisclaimerFile(List<Package> packages) async {
+Future<String> formatDisclaimerFile(List<DependencyChecker> packages) async {
   StringBuffer disclaimer = StringBuffer();
-  for (Package package in packages) {
+  for (DependencyChecker package in packages) {
     String copyright = await package.copyright;
     File? licenseFile = package.licenseFile;
     String? licenseText = await licenseFile?.readAsString();

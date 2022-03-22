@@ -23,7 +23,7 @@ class Config {
   factory Config.fromFile(File configFile) {
     if (!configFile.existsSync()) {
       return throw FileSystemException(
-        '$configFile file not found in current directory.',
+        '${configFile.path} file not found in current directory.',
       );
     }
 

@@ -1,0 +1,8 @@
+name: dodgers
+description: The best team.
+version: 1.0.0
+
+dependencies:
+  angles: 1.0.0
+  as: 1.0.0
+  padres: 1.0.0
