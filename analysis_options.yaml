@@ -4,6 +4,8 @@ analyzer:
   language:
     strict-inference: true
     strict-raw-types: true
+  exclude:
+    - test/lib/src/fixtures/dodgers
 
 linter:
   # The lint rules applied to this project can be customized in the

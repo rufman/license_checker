@@ -7,11 +7,8 @@ import 'package:path/path.dart';
 
 import 'package:license_checker/src/config.dart';
 import 'package:license_checker/src/format.dart';
-import 'package:license_checker/src/package.dart';
-import 'package:license_checker/src/package_config.dart';
-
-File pubspecFile = File('pubspec.yaml');
-File packageConfigFile = File('.dart_tool/package_config.json');
+import 'package:license_checker/src/dependency_checker.dart';
+import 'package:license_checker/src/package_checker.dart';
 
 void main(List<String> arguments) async {
   exitCode = 0;
@@ -61,7 +58,8 @@ class CheckLicenses extends Command<int> {
     List<Row> rows = [];
 
     Config config = _loadConfig(globalResults);
-    await _processPackage(config, globalResults, (Package package) async {
+    await _processPackage(config, globalResults,
+        (DependencyChecker package) async {
       rows.add(
         formatLicenseRow(
           packageName: package.name,
@@ -106,9 +104,10 @@ class GenerateDisclaimer extends Command<int> {
     String outputPath = argResults?['path'];
     Config config = _loadConfig(globalResults);
     List<Row> rows = [];
-    List<Package> packageDisclaimers = [];
+    List<DependencyChecker> packageDisclaimers = [];
 
-    await _processPackage(config, globalResults, (Package package) async {
+    await _processPackage(config, globalResults,
+        (DependencyChecker package) async {
       rows.add(
         formatDisclaimerRow(
           packageName: package.name,
@@ -169,7 +168,7 @@ Config _loadConfig(ArgResults? args) {
   return Config.fromFile(File(configPath));
 }
 
-typedef ProcessFunction = Future<void> Function(Package package);
+typedef ProcessFunction = Future<void> Function(DependencyChecker package);
 
 Future<int> _processPackage(
   Config config,
@@ -182,12 +181,10 @@ Future<int> _processPackage(
     'Checking ${showDirectDepsOnly ? 'direct' : 'all'} dependencies...',
   );
   try {
-    PackageConfig packageConfig = PackageConfig.fromFile(
-      pubspecFile: pubspecFile,
-      packageConfigFile: packageConfigFile,
-      config: config,
-    );
-    for (Package package in packageConfig.packages) {
+    PackageChecker packageConfig =
+        await PackageChecker.fromCurrentDirectory(config: config);
+
+    for (DependencyChecker package in packageConfig.packages) {
       if (showDirectDepsOnly) {
         // Ignore dependencies not defined in the packages pubspec.yaml
         if (!packageConfig.pubspec.dependencies.containsKey(package.name)) {

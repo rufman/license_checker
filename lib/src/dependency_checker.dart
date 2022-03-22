@@ -5,6 +5,7 @@ import 'package:pana/pana.dart';
 import 'package:pana/src/license_detection/license_detector.dart'
     as pana_license_detector;
 import 'package:path/path.dart';
+import 'package:package_config/package_config.dart';
 
 import 'package:license_checker/src/config.dart';
 
@@ -64,43 +65,21 @@ enum LicenseStatus {
 }
 
 /// Represents a single package that is a dependency of the package we are checking.
-class Package {
+class DependencyChecker {
   /// The name of the package.
   final String name;
 
-  /// The root uri of the package.
-  final String rootUri;
+  /// The package as defined in the package_config.
+  final Package package;
 
   /// User config for the license checker.
   final Config config;
 
-  Package._({
-    required this.name,
-    required this.rootUri,
+  /// Default constructor
+  DependencyChecker({
+    required this.package,
     required this.config,
-  });
-
-  /// Constructs a package from json
-  factory Package.fromJson({required Config config, required Object source}) {
-    if (source is! Map) {
-      throw FormatException();
-    }
-
-    String rootUri = source['rootUri'] ?? '<unknown root uri>';
-    if (rootUri.startsWith('file://')) {
-      if (Platform.isWindows) {
-        rootUri = rootUri.substring(8);
-      } else {
-        rootUri = rootUri.substring(7);
-      }
-    }
-
-    return Package._(
-      name: source['name'] ?? '<unknown name>',
-      rootUri: rootUri,
-      config: config,
-    );
-  }
+  }) : name = package.name;
 
   /// Returns the license status of the package.
   Future<LicenseStatus> get packageLicenseStatus async {
@@ -137,7 +116,7 @@ class Package {
   /// different file names.
   File? get licenseFile {
     for (String fileName in _licenseFileNames) {
-      File file = File(join(rootUri, fileName));
+      File file = File(join(fromUri(package.root), fileName));
       if (file.existsSync()) {
         return file;
       }
@@ -178,7 +157,7 @@ class Package {
   /// Returns the location where the source can be found
   String get sourceLocation {
     String sourceLocation = unknownSource;
-    File file = File(join(rootUri, 'pubspec.yaml'));
+    File file = File(join(fromUri(package.root), 'pubspec.yaml'));
     if (!file.existsSync()) {
       return throw FileSystemException(
         'pubspec.yaml file not found in package $name.',
