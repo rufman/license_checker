@@ -1,8 +1,10 @@
 name: dodgers
 description: The best team.
+repository: https://chavez.ravine
 version: 1.0.0
 
 dependencies:
   angles: 1.0.0
   as: 1.0.0
+  mlb: 2.0.0
   padres: 1.0.0

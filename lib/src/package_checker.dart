@@ -37,8 +37,8 @@ class PackageChecker {
       );
     }
     Pubspec pubspec = Pubspec.parseYaml(await pubspecFile.readAsString());
-    print(directory);
-    PackageConfig? packageConfig = await findPackageConfig(directory);
+    PackageConfig? packageConfig =
+        await findPackageConfig(directory, recurse: false);
 
     if (packageConfig == null) {
       throw FileSystemException(

@@ -62,7 +62,7 @@ void main() {
         expectedPermittedLicenses: ['Apache-2.0'],
         expectedRejectedLicenses: ['MIT'],
         expectedApprovedPackages: {
-          'GPL': ['mlb'],
+          'GPL-1.0': ['mlb'],
         },
       ),
       _ConfigSuccessTest(
