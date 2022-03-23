@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/rufman/license_checker/branch/trunk/graph/badge.svg?token=V20VQE4GPK)](https://codecov.io/gh/rufman/license_checker) [![Dart](https://github.com/rufman/license_checker/actions/workflows/dart.yml/badge.svg)](https://github.com/rufman/license_checker/actions/workflows/dart.yml) 
+[![codecov](https://codecov.io/gh/rufman/license_checker/branch/trunk/graph/badge.svg?token=V20VQE4GPK)](https://codecov.io/gh/rufman/license_checker) [![Dart](https://github.com/rufman/license_checker/actions/workflows/dart.yml/badge.svg)](https://github.com/rufman/license_checker/actions/workflows/dart.yml) [![Pub](https://img.shields.io/pub/v/coverage.svg)](https://pub.dev/packages/license_checker)
 
 Displays the license of dependencies. Permitted, rejected and approved packages are configurable
 through a YAML config file,
