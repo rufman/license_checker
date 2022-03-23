@@ -24,6 +24,9 @@ jobs:
       # - uses: dart-lang/setup-dart@v1
       - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
 
+      - name: Install coverage
+        run: dart pub global activate coverage
+
       - name: Install dependencies
         run: dart pub get
 
@@ -42,3 +45,14 @@ jobs:
       # want to change this to 'flutter test'.
       - name: Run tests
         run: dart test --coverage=./coverage
+
+      - name: Collect coverage
+        run: format_coverage --check-ignore --packages=.packages --report-on=lib --lcov -o ./coverage/lcov.info -i ./coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          name: codecov-umbrella
+          files: ./coverage/lcov.info
+          fail_ci_if_error: true
+          verbose: true
