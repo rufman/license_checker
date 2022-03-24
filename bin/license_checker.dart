@@ -17,9 +17,56 @@ void main(List<String> arguments) async {
     ..addCommand(CheckLicenses())
     ..addCommand(GenerateDisclaimer());
 
-  int? errors = await cmd.run(arguments);
-  if (errors != null) {
-    exitCode = errors;
+  try {
+    int? errors = await cmd.run(arguments);
+    if (errors != null) {
+      exitCode = errors;
+    }
+  } on UsageException catch (e) {
+    printError(e.message);
+    print('');
+    print(e.usage);
+  }
+}
+
+class RowWithPriority {
+  final Row display;
+  final LicenseStatus status;
+  late final int priority;
+
+  RowWithPriority(this.display, this.status) {
+    switch (status) {
+      case LicenseStatus.approved:
+        {
+          priority = 1;
+          break;
+        }
+      case LicenseStatus.permitted:
+        {
+          priority = 1;
+          break;
+        }
+      case LicenseStatus.unknown:
+        {
+          priority = 2;
+          break;
+        }
+      case LicenseStatus.rejected:
+        {
+          priority = 5;
+          break;
+        }
+      case LicenseStatus.needsApproval:
+        {
+          priority = 4;
+          break;
+        }
+      case LicenseStatus.noLicense:
+        {
+          priority = 3;
+          break;
+        }
+    }
   }
 }
 
@@ -35,6 +82,7 @@ class LicenseCommandRunner extends CommandRunner<int> {
         abbr: 'd',
         help: 'Show license only for direct dependencies.',
         defaultsTo: false,
+        negatable: false,
       )
       ..addOption(
         'config',
@@ -53,25 +101,67 @@ class CheckLicenses extends Command<int> {
   final String description =
       'Checks licenses of all dependencies for compliance.';
 
+  CheckLicenses() {
+    argParser.addFlag(
+      'problematic',
+      abbr: 'p',
+      help:
+          'Show only package with problematic license statuses (filter approved and permitted packages).',
+      negatable: false,
+      defaultsTo: false,
+    );
+  }
+
   @override
   Future<int> run() async {
-    List<Row> rows = [];
+    bool filterApproved = argResults?['problematic'];
+    if (filterApproved) {
+      printInfo('Filtering out approved packages ...');
+    }
+    List<RowWithPriority> rows = [];
 
     Config config = _loadConfig(globalResults);
     await _processPackage(config, globalResults,
         (DependencyChecker package) async {
-      rows.add(
-        formatLicenseRow(
-          packageName: package.name,
-          licenseStatus: await package.packageLicenseStatus,
-          licenseName: await package.licenseName,
-        ),
-      );
+      LicenseStatus status = await package.packageLicenseStatus;
+      if (!filterApproved ||
+          (filterApproved &&
+              status != LicenseStatus.approved &&
+              status != LicenseStatus.permitted)) {
+        rows.add(
+          RowWithPriority(
+            formatLicenseRow(
+              packageName: package.name,
+              licenseStatus: status,
+              licenseName: await package.licenseName,
+            ),
+            status,
+          ),
+        );
+      }
     });
 
-    print(formatLicenseTable(rows).render());
+    // Sort by priority
+    rows.sort((a, b) {
+      if (a.priority < b.priority) {
+        return -1;
+      }
+      if (a.priority > b.priority) {
+        return 1;
+      }
+      return 0;
+    });
 
-    return 0;
+    print(formatLicenseTable(rows.map((e) => e.display).toList()).render());
+
+    // Return error status code if any package has a license that has not been approved.
+    return rows.any(
+      (r) =>
+          r.status != LicenseStatus.approved ||
+          r.status != LicenseStatus.permitted,
+    )
+        ? 1
+        : 0;
   }
 }
 
