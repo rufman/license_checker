@@ -45,7 +45,7 @@ class CheckLicenses extends Command<int> {
     }
 
     printInfo(
-      'Checking ${showDirectDepsOnly ? 'direct' : 'all'} dependencies...',
+      'Checking ${showDirectDepsOnly ? 'direct' : 'all'} dependencies ...',
     );
 
     List<LicenseDisplayWithPriority<Row>> rows = [];
@@ -63,7 +63,11 @@ class CheckLicenses extends Command<int> {
       return 1;
     }
 
-    print(formatLicenseTable(rows.map((e) => e.display).toList()).render());
+    if (rows.isEmpty) {
+      print('No package license need approval!');
+    } else {
+      print(formatLicenseTable(rows.map((e) => e.display).toList()).render());
+    }
 
     // Return error status code if any package has a license that has not been approved.
     return rows.any(

@@ -49,7 +49,7 @@ class GenerateDisclaimer extends Command<int> {
     }
 
     printInfo(
-      'Generating disclaimer for ${showDirectDepsOnly ? 'direct' : 'all'} dependencies...',
+      'Generating disclaimer for ${showDirectDepsOnly ? 'direct' : 'all'} dependencies ...',
     );
 
     PackageChecker packageConfig =

@@ -9,7 +9,7 @@ import 'package:license_checker/src/format.dart';
 Config? loadConfig(ArgResults? args) {
   String configPath = args?['config'];
 
-  printInfo('Loading config from $configPath');
+  printInfo('Loading config from $configPath ...');
 
   try {
     return Config.fromFile(File(configPath));
