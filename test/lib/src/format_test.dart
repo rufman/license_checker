@@ -1,18 +1,12 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:mirrors';
 
 import 'package:barbecue/barbecue.dart';
 import 'package:colorize/colorize.dart';
-import 'package:package_config/package_config.dart';
-import 'package:pana/pana.dart';
 import 'package:test/test.dart';
 
-import 'package:license_checker/src/config.dart';
 import 'package:license_checker/src/dependency_checker.dart';
 import 'package:license_checker/src/format.dart';
-
-// typedef _FormatFunction = Colorize Function(String text);
 
 class _ColorizeTest {
   final Colorize color;
@@ -219,20 +213,6 @@ void main() {
         ),
       );
       String s = strBuff.toString();
-
-      //   [
-      //   DependencyChecker(
-      //     config: config,
-      //     package: Package(
-      //       'dodgers',
-      //       Uri(
-      //         scheme: 'file',
-      //         path: Directory.current.absolute.path +
-      //             '/test/lib/src/fixtures/dodgers/',
-      //       ),
-      //     ),
-      //   )
-      // ]);
 
       expect(
         s,

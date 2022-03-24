@@ -8,7 +8,8 @@ import 'package:path/path.dart';
 import 'package:license_checker/src/config.dart';
 import 'package:license_checker/src/format.dart';
 import 'package:license_checker/src/dependency_checker.dart';
-import 'package:license_checker/src/checker.dart';
+import 'package:license_checker/src/generate_disclaimer.dart';
+import 'package:license_checker/src/check_license.dart';
 import 'package:license_checker/src/package_checker.dart';
 
 void main(List<String> arguments) async {
