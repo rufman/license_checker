@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:mirrors';
 
 import 'package:barbecue/barbecue.dart';
 import 'package:colorize/colorize.dart';
 import 'package:package_config/package_config.dart';
+import 'package:pana/pana.dart';
 import 'package:test/test.dart';
 
 import 'package:license_checker/src/config.dart';
@@ -206,21 +208,31 @@ void main() {
 
     test('should properly format the file with license and copyright',
         () async {
-      Config config =
-          Config.fromFile(File('test/lib/src/fixtures/valid_config.yaml'));
-      String s = await formatDisclaimerFile([
-        DependencyChecker(
-          config: config,
-          package: Package(
-            'dodgers',
-            Uri(
-              scheme: 'file',
-              path: Directory.current.absolute.path +
-                  '/test/lib/src/fixtures/dodgers/',
-            ),
-          ),
-        )
-      ]);
+      StringBuffer strBuff = formatDisclaimer(
+        packageName: 'dodgers',
+        licenseName: 'Apache-2.0',
+        copyright: '2022 Los Angeles',
+        sourceLocation: 'https://chavez.ravine',
+        licenseFile: File(
+          Directory.current.absolute.path +
+              '/test/lib/src/fixtures/dodgers/LICENSE',
+        ),
+      );
+      String s = strBuff.toString();
+
+      //   [
+      //   DependencyChecker(
+      //     config: config,
+      //     package: Package(
+      //       'dodgers',
+      //       Uri(
+      //         scheme: 'file',
+      //         path: Directory.current.absolute.path +
+      //             '/test/lib/src/fixtures/dodgers/',
+      //       ),
+      //     ),
+      //   )
+      // ]);
 
       expect(
         s,
@@ -240,21 +252,14 @@ void main() {
     });
 
     test('should properly format the file with no license', () async {
-      Config config =
-          Config.fromFile(File('test/lib/src/fixtures/valid_config.yaml'));
-      String s = await formatDisclaimerFile([
-        DependencyChecker(
-          config: config,
-          package: Package(
-            'angeles',
-            Uri(
-              scheme: 'file',
-              path: Directory.current.absolute.path +
-                  '/test/lib/src/fixtures/angeles/',
-            ),
-          ),
-        )
-      ]);
+      StringBuffer strBuff = formatDisclaimer(
+        packageName: 'angeles',
+        licenseName: unknownLicense,
+        copyright: unknownCopyright,
+        sourceLocation: 'https://www.mlb.com/angels',
+        licenseFile: null,
+      );
+      String s = strBuff.toString();
 
       expect(
         s,

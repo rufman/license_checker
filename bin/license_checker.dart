@@ -8,6 +8,7 @@ import 'package:path/path.dart';
 import 'package:license_checker/src/config.dart';
 import 'package:license_checker/src/format.dart';
 import 'package:license_checker/src/dependency_checker.dart';
+import 'package:license_checker/src/checker.dart';
 import 'package:license_checker/src/package_checker.dart';
 
 void main(List<String> arguments) async {
@@ -26,47 +27,6 @@ void main(List<String> arguments) async {
     printError(e.message);
     print('');
     print(e.usage);
-  }
-}
-
-class RowWithPriority {
-  final Row display;
-  final LicenseStatus status;
-  late final int priority;
-
-  RowWithPriority(this.display, this.status) {
-    switch (status) {
-      case LicenseStatus.approved:
-        {
-          priority = 1;
-          break;
-        }
-      case LicenseStatus.permitted:
-        {
-          priority = 1;
-          break;
-        }
-      case LicenseStatus.unknown:
-        {
-          priority = 2;
-          break;
-        }
-      case LicenseStatus.rejected:
-        {
-          priority = 5;
-          break;
-        }
-      case LicenseStatus.needsApproval:
-        {
-          priority = 4;
-          break;
-        }
-      case LicenseStatus.noLicense:
-        {
-          priority = 3;
-          break;
-        }
-    }
   }
 }
 
@@ -115,42 +75,34 @@ class CheckLicenses extends Command<int> {
   @override
   Future<int> run() async {
     bool filterApproved = argResults?['problematic'];
+    bool showDirectDepsOnly = globalResults?['direct'];
     if (filterApproved) {
       printInfo('Filtering out approved packages ...');
     }
-    List<RowWithPriority> rows = [];
 
-    Config config = _loadConfig(globalResults);
-    await _processPackage(config, globalResults,
-        (DependencyChecker package) async {
-      LicenseStatus status = await package.packageLicenseStatus;
-      if (!filterApproved ||
-          (filterApproved &&
-              status != LicenseStatus.approved &&
-              status != LicenseStatus.permitted)) {
-        rows.add(
-          RowWithPriority(
-            formatLicenseRow(
-              packageName: package.name,
-              licenseStatus: status,
-              licenseName: await package.licenseName,
-            ),
-            status,
-          ),
-        );
-      }
-    });
+    Config? config = _loadConfig(globalResults);
+    if (config == null) {
+      return 1;
+    }
 
-    // Sort by priority
-    rows.sort((a, b) {
-      if (a.priority < b.priority) {
-        return -1;
-      }
-      if (a.priority > b.priority) {
-        return 1;
-      }
-      return 0;
-    });
+    printInfo(
+      'Checking ${showDirectDepsOnly ? 'direct' : 'all'} dependencies...',
+    );
+
+    List<LicenseDisplayWithPriority<Row>> rows = [];
+    try {
+      PackageChecker packageConfig =
+          await PackageChecker.fromCurrentDirectory(config: config);
+      rows = await checkAllPackageLicenses<Row>(
+        packageConfig: packageConfig,
+        showDirectDepsOnly: showDirectDepsOnly,
+        filterApproved: filterApproved,
+        licenseDisplay: formatLicenseRow,
+      );
+    } on FileSystemException catch (error) {
+      printError(error.message);
+      return 1;
+    }
 
     print(formatLicenseTable(rows.map((e) => e.display).toList()).render());
 
@@ -192,26 +144,32 @@ class GenerateDisclaimer extends Command<int> {
   Future<int> run() async {
     String disclaimerName = argResults?['file'];
     String outputPath = argResults?['path'];
-    Config config = _loadConfig(globalResults);
-    List<Row> rows = [];
-    List<DependencyChecker> packageDisclaimers = [];
+    bool showDirectDepsOnly = globalResults?['direct'];
 
-    await _processPackage(config, globalResults,
-        (DependencyChecker package) async {
-      String copyright =
-          config.copyrightNotice[package.name] ?? await package.copyright;
-      rows.add(
-        formatDisclaimerRow(
-          packageName: package.name,
-          copyright: copyright,
-          licenseName: await package.licenseName,
-          sourceLocation: package.sourceLocation,
-        ),
-      );
-      packageDisclaimers.add(package);
-    });
+    Config? config = _loadConfig(globalResults);
+    if (config == null) {
+      return 1;
+    }
 
-    print(formatDisclaimerTable(rows).render());
+    printInfo(
+      'Generating disclaimer for ${showDirectDepsOnly ? 'direct' : 'all'} dependencies...',
+    );
+
+    PackageChecker packageConfig =
+        await PackageChecker.fromCurrentDirectory(config: config);
+
+    DisclaimerDisplay<List<Row>, List<StringBuffer>> disclaimer =
+        await generateDisclaimers<Row, StringBuffer>(
+      config: config,
+      packageConfig: packageConfig,
+      showDirectDepsOnly: showDirectDepsOnly,
+      disclaimerCLIDisplay: formatDisclaimerRow,
+      disclaimerFileDisplay: formatDisclaimer,
+    );
+
+    print(
+      formatDisclaimerTable(disclaimer.cli).render(),
+    );
 
     // Write disclaimer
     bool correctInfo = _promptYN('Is this information correct?');
@@ -223,8 +181,12 @@ class GenerateDisclaimer extends Command<int> {
       if (writeFile) {
         File output = File(outputFilePath);
         printInfo('Writing disclaimer to file $outputFilePath ...');
-        output
-            .writeAsStringSync(await formatDisclaimerFile(packageDisclaimers));
+        StringBuffer disclaimerText = StringBuffer();
+        for (StringBuffer d in disclaimer.file) {
+          disclaimerText.write(d.toString());
+        }
+        output.writeAsStringSync(disclaimerText.toString());
+
         printInfo('Finished writing disclaimer.');
       } else {
         printError('Did not write disclaimer.');
@@ -252,45 +214,15 @@ class GenerateDisclaimer extends Command<int> {
   }
 }
 
-Config _loadConfig(ArgResults? args) {
+Config? _loadConfig(ArgResults? args) {
   String configPath = args?['config'];
 
   printInfo('Loading config from $configPath');
 
-  return Config.fromFile(File(configPath));
-}
-
-typedef ProcessFunction = Future<void> Function(DependencyChecker package);
-
-Future<int> _processPackage(
-  Config config,
-  ArgResults? args,
-  ProcessFunction processFn,
-) async {
-  bool showDirectDepsOnly = args?['direct'];
-
-  printInfo(
-    'Checking ${showDirectDepsOnly ? 'direct' : 'all'} dependencies...',
-  );
   try {
-    PackageChecker packageConfig =
-        await PackageChecker.fromCurrentDirectory(config: config);
-
-    for (DependencyChecker package in packageConfig.packages) {
-      if (showDirectDepsOnly) {
-        // Ignore dependencies not defined in the packages pubspec.yaml
-        if (!packageConfig.pubspec.dependencies.containsKey(package.name)) {
-          continue;
-        }
-      }
-      await processFn(package);
-    }
-  } on FileSystemException catch (error) {
-    printError(error.message);
-    return 1;
+    return Config.fromFile(File(configPath));
   } on FormatException catch (error) {
     printError(error.message);
-    return 1;
+    return null;
   }
-  return 0;
 }

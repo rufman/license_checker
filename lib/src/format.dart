@@ -60,38 +60,40 @@ Table formatDisclaimerTable(List<Row> rows) {
   );
 }
 
-/// Formats the output of the disclaimer file.
-Future<String> formatDisclaimerFile(List<DependencyChecker> packages) async {
+/// Formats the output of the package disclaimer for a file.
+StringBuffer formatDisclaimer({
+  required String packageName,
+  required String licenseName,
+  required String copyright,
+  required String sourceLocation,
+  required File? licenseFile,
+}) {
   StringBuffer disclaimer = StringBuffer();
-  for (DependencyChecker package in packages) {
-    String copyright = await package.copyright;
-    File? licenseFile = package.licenseFile;
-    String? licenseText = await licenseFile?.readAsString();
+  String? licenseText = licenseFile?.readAsStringSync();
 
-    disclaimer.writeln(
-      'The following software may be included in this product: ${package.name}',
-    );
-    disclaimer.writeln(
-      'A copy of the source code may be downloaded from: ${package.sourceLocation}',
-    );
+  disclaimer.writeln(
+    'The following software may be included in this product: $packageName',
+  );
+  disclaimer.writeln(
+    'A copy of the source code may be downloaded from: $sourceLocation',
+  );
 
-    if (licenseText != null || copyright != unknownCopyright) {
-      disclaimer.writeln();
-      disclaimer.writeln(
-        'This software contains the following license and notice below:',
-      );
-      if (copyright != unknownCopyright) {
-        disclaimer.writeln('Copyright (c) $copyright');
-      }
-      if (licenseText != null) {
-        // Remove copyright from license text since it's displayed above.
-        disclaimer.writeln(licenseText.replaceFirst(coprightRegex, ''));
-      }
-      disclaimer.writeln();
+  if (licenseText != null || copyright != unknownCopyright) {
+    disclaimer.writeln();
+    disclaimer.writeln(
+      'This software contains the following license and notice below:',
+    );
+    if (copyright != unknownCopyright) {
+      disclaimer.writeln('Copyright (c) $copyright');
     }
+    if (licenseText != null) {
+      // Remove copyright from license text since it's displayed above.
+      disclaimer.writeln(licenseText.replaceFirst(coprightRegex, ''));
+    }
+    disclaimer.writeln();
   }
 
-  return disclaimer.toString();
+  return disclaimer;
 }
 
 /// Formats the name of a license based on organization rules.
