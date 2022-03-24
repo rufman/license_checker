@@ -22,6 +22,9 @@ approvedPackages:
 
 rejectedLicenses:
   - GPL
+
+copyrightNotice:
+  mlb: "2000 MLB."
 ```
 
 This file can be referenced when calling `lic_ck check-licenses` with the `--config` option.
