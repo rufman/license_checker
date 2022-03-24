@@ -22,12 +22,14 @@ class _ConfigSuccessTest {
   final List<String> expectedPermittedLicenses;
   final List<String> expectedRejectedLicenses;
   final Map<String, List<String>> expectedApprovedPackages;
+  final Map<String, String> expectedCopyrightNotice;
 
   _ConfigSuccessTest({
     required this.fileName,
     required this.expectedPermittedLicenses,
     required this.expectedRejectedLicenses,
     required this.expectedApprovedPackages,
+    required this.expectedCopyrightNotice,
     required this.testDescription,
   });
 }
@@ -55,6 +57,7 @@ void main() {
         expectedPermittedLicenses: ['Apache-2.0'],
         expectedRejectedLicenses: <String>[],
         expectedApprovedPackages: <String, List<String>>{},
+        expectedCopyrightNotice: {},
       ),
       _ConfigSuccessTest(
         testDescription: 'Parse valid config with everything defined',
@@ -64,6 +67,7 @@ void main() {
         expectedApprovedPackages: {
           'GPL-1.0': ['mlb'],
         },
+        expectedCopyrightNotice: {},
       ),
       _ConfigSuccessTest(
         testDescription: 'Parse valid config with no rejected licenses',
@@ -73,6 +77,7 @@ void main() {
         expectedApprovedPackages: {
           'GPL': ['mlb'],
         },
+        expectedCopyrightNotice: {},
       ),
       _ConfigSuccessTest(
         testDescription: 'Parse valid config and ignore non string licenses',
@@ -82,6 +87,17 @@ void main() {
         expectedApprovedPackages: {
           'GPL': ['mlb'],
         },
+        expectedCopyrightNotice: {},
+      ),
+      _ConfigSuccessTest(
+        testDescription: 'Parse valid config with copyright notice overrides',
+        fileName: 'valid_config_copyright',
+        expectedPermittedLicenses: ['Apache-2.0'],
+        expectedRejectedLicenses: ['MIT'],
+        expectedApprovedPackages: {
+          'GPL-1.0': ['mlb'],
+        },
+        expectedCopyrightNotice: {'mlb': '2000 MLB.'},
       ),
     ];
     for (_ConfigSuccessTest t in configSuccessTests) {
@@ -92,6 +108,7 @@ void main() {
         expect(validConfig.permittedLicenses, t.expectedPermittedLicenses);
         expect(validConfig.rejectedLicenses, t.expectedRejectedLicenses);
         expect(validConfig.approvedPackages, t.expectedApprovedPackages);
+        expect(validConfig.copyrightNotice, t.expectedCopyrightNotice);
       });
     }
   });
@@ -100,40 +117,61 @@ void main() {
     List<_ConfigErrorTest> configErrorTests = [
       _ConfigErrorTest(
         testDescription:
-            'Throw format exception on invalid permitted license config',
+            'throw format exception on invalid permitted license config',
         fileName: 'invalid_permitted_config',
         expectedErrorMessage: '`permittedLicenses` is not defined as a list',
       ),
       _ConfigErrorTest(
         testDescription:
-            'Throw format exception when no permitted licesens are defined',
+            'throw format exception when no permitted licesens are defined',
         fileName: 'invalid_no_permitted_config',
         expectedErrorMessage: '`permittedLicenses` not defined',
       ),
       _ConfigErrorTest(
         testDescription:
-            'Throw format exception when no rejected licesens are not properly defined',
+            'throw format exception when no rejected licesens are not properly defined',
         fileName: 'invalid_rejected_config',
         expectedErrorMessage: '`rejectedLicenses` is not defined as a list',
       ),
       _ConfigErrorTest(
         testDescription:
-            'Throw format exception when approved package is not defined as a map',
+            'throw format exception when approved package is not defined as a map',
         fileName: 'invalid_approved_package_config',
         expectedErrorMessage: '`approvedPackages` not defined as a map',
       ),
       _ConfigErrorTest(
         testDescription:
-            'Throw format exception when approved package is not defined as a map with string keys',
+            'throw format exception when approved package is not defined as a map with string keys',
         fileName: 'invalid_approved_package_string_config',
         expectedErrorMessage:
             '`approvedPackages` must be keyed by a string license name',
       ),
       _ConfigErrorTest(
         testDescription:
-            'Throw format exception when approved package is not defined as a map of lists',
+            'throw format exception when approved package is not defined as a map of lists',
         fileName: 'invalid_approved_package_list_config',
-        expectedErrorMessage: '`approvedPackages` must specified as a list',
+        expectedErrorMessage:
+            '`approvedPackages` value must specified as a list',
+      ),
+      _ConfigErrorTest(
+        testDescription:
+            'throw format exception when copyright notice is not defined as a map',
+        fileName: 'invalid_copyright_list_config',
+        expectedErrorMessage: '`copyrightNotice` not defined as a map',
+      ),
+      _ConfigErrorTest(
+        testDescription:
+            'throw format exception when copyright notice is not defined with string keys',
+        fileName: 'invalid_copyright_string_key_config',
+        expectedErrorMessage:
+            '`copyrightNotice` must be keyed by a string package name',
+      ),
+      _ConfigErrorTest(
+        testDescription:
+            'throw format exception when copyright notice is not defined with string values',
+        fileName: 'invalid_copyright_string_value_config',
+        expectedErrorMessage:
+            '`copyrightNotice` value must bea string copyright notice',
       ),
     ];
 
