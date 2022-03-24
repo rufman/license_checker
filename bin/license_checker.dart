@@ -198,10 +198,12 @@ class GenerateDisclaimer extends Command<int> {
 
     await _processPackage(config, globalResults,
         (DependencyChecker package) async {
+      String copyright =
+          config.copyrightNotice[package.name] ?? await package.copyright;
       rows.add(
         formatDisclaimerRow(
           packageName: package.name,
-          copyright: await package.copyright,
+          copyright: copyright,
           licenseName: await package.licenseName,
           sourceLocation: package.sourceLocation,
         ),
