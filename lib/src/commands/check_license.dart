@@ -65,19 +65,22 @@ class CheckLicenses extends Command<int> {
       return 1;
     }
 
-    if (rows.isEmpty) {
-      printSuccess('No package licenses need approval!');
-    } else {
+    if (rows.isNotEmpty) {
       print(formatLicenseTable(rows.map((e) => e.display).toList()).render());
     }
 
-    // Return error status code if any package has a license that has not been approved.
-    return rows.any(
+    int exitCode = rows.any(
       (r) =>
           r.status != LicenseStatus.approved ||
           r.status != LicenseStatus.permitted,
     )
         ? 1
         : 0;
+    if (rows.isEmpty || exitCode == 0) {
+      printSuccess('No package licenses need approval!');
+    }
+
+    // Return error status code if any package has a license that has not been approved.
+    return exitCode;
   }
 }
