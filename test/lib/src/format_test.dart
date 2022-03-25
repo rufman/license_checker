@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:barbecue/barbecue.dart';
@@ -21,39 +20,6 @@ class _ColorizeTest {
 }
 
 void main() {
-  group('Console print functions', () {
-    String stdout = '';
-
-    void Function() overridePrint(void Function() testFn) {
-      return () {
-        ZoneSpecification spec = ZoneSpecification(
-          print: (_, __, ___, String msg) {
-            // Add to log instead of printing to stdout
-            stdout = msg;
-          },
-        );
-        return Zone.current.fork(specification: spec).run<void>(testFn);
-      };
-    }
-
-    setUpAll(() => stdout = '');
-    test(
-      'should print blue text for info',
-      overridePrint(() {
-        printInfo('LA');
-        expect(stdout, Colorize('LA').blue().toString());
-      }),
-    );
-
-    test(
-      'should print red text for errors',
-      overridePrint(() {
-        printError('Anaheim');
-        expect(stdout, Colorize('Anaheim').red().toString());
-      }),
-    );
-  });
-
   group('Colorize formatting functions', () {
     const text = 'opening day';
     List<_ColorizeTest> colorizeTests = [

@@ -5,7 +5,7 @@ import 'package:args/command_runner.dart';
 import 'package:license_checker/command_runner.dart';
 import 'package:license_checker/src/commands/check_license.dart';
 import 'package:license_checker/src/commands/generate_disclaimer.dart';
-import 'package:license_checker/src/format.dart';
+import 'package:license_checker/src/commands/utils.dart';
 
 void main(List<String> arguments) async {
   exitCode = 0;

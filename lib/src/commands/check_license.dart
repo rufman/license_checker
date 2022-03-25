@@ -35,17 +35,19 @@ class CheckLicenses extends Command<int> {
   Future<int> run() async {
     bool filterApproved = argResults?['problematic'];
     bool showDirectDepsOnly = globalResults?['direct'];
+    String configPath = globalResults?['config'];
+
     if (filterApproved) {
       printInfo('Filtering out approved packages ...');
     }
 
-    Config? config = loadConfig(globalResults);
+    Config? config = loadConfig(configPath);
     if (config == null) {
       return 1;
     }
 
     printInfo(
-      'Checking ${showDirectDepsOnly ? 'direct' : 'all'} dependencies...',
+      'Checking ${showDirectDepsOnly ? 'direct' : 'all'} dependencies ...',
     );
 
     List<LicenseDisplayWithPriority<Row>> rows = [];
@@ -63,15 +65,22 @@ class CheckLicenses extends Command<int> {
       return 1;
     }
 
-    print(formatLicenseTable(rows.map((e) => e.display).toList()).render());
+    if (rows.isNotEmpty) {
+      print(formatLicenseTable(rows.map((e) => e.display).toList()).render());
+    }
 
-    // Return error status code if any package has a license that has not been approved.
-    return rows.any(
+    int exitCode = rows.any(
       (r) =>
           r.status != LicenseStatus.approved ||
           r.status != LicenseStatus.permitted,
     )
         ? 1
         : 0;
+    if (rows.isEmpty || exitCode == 0) {
+      printSuccess('No package licenses need approval!');
+    }
+
+    // Return error status code if any package has a license that has not been approved.
+    return exitCode;
   }
 }

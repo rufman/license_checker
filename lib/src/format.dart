@@ -203,13 +203,3 @@ Colorize licenseOKFormat(String text) {
 Colorize licenseErrorFormat(String text) {
   return Colorize(text).red();
 }
-
-/// Prints error text to console in red.
-void printError(String text) {
-  color(text, front: Styles.RED);
-}
-
-/// Prints info text to console in blue.
-void printInfo(String text) {
-  color(text, front: Styles.BLUE);
-}
