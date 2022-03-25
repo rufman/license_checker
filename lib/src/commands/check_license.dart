@@ -71,7 +71,7 @@ class CheckLicenses extends Command<int> {
 
     int exitCode = rows.any(
       (r) =>
-          r.status != LicenseStatus.approved ||
+          r.status != LicenseStatus.approved &&
           r.status != LicenseStatus.permitted,
     )
         ? 1
