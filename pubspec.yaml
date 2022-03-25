@@ -1,6 +1,6 @@
 name: license_checker
 description: Tool to view and check license of a package's dependencies.
-version: 0.0.4
+version: 0.0.5
 homepage: https://github.com/rufman/license_checker
 
 environment:
