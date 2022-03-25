@@ -35,11 +35,13 @@ class CheckLicenses extends Command<int> {
   Future<int> run() async {
     bool filterApproved = argResults?['problematic'];
     bool showDirectDepsOnly = globalResults?['direct'];
+    String configPath = globalResults?['config'];
+
     if (filterApproved) {
       printInfo('Filtering out approved packages ...');
     }
 
-    Config? config = loadConfig(globalResults);
+    Config? config = loadConfig(configPath);
     if (config == null) {
       return 1;
     }
@@ -64,7 +66,7 @@ class CheckLicenses extends Command<int> {
     }
 
     if (rows.isEmpty) {
-      print('No package license need approval!');
+      printSuccess('No package licenses need approval!');
     } else {
       print(formatLicenseTable(rows.map((e) => e.display).toList()).render());
     }

@@ -42,8 +42,9 @@ class GenerateDisclaimer extends Command<int> {
     String disclaimerName = argResults?['file'];
     String outputPath = argResults?['path'];
     bool showDirectDepsOnly = globalResults?['direct'];
+    String configPath = globalResults?['config'];
 
-    Config? config = loadConfig(globalResults);
+    Config? config = loadConfig(configPath);
     if (config == null) {
       return 1;
     }
@@ -84,7 +85,7 @@ class GenerateDisclaimer extends Command<int> {
         }
         output.writeAsStringSync(disclaimerText.toString());
 
-        printInfo('Finished writing disclaimer.');
+        printSuccess('Finished writing disclaimer.');
       } else {
         printError('Did not write disclaimer.');
       }
