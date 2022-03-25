@@ -19,3 +19,7 @@
 
 - Clean up print statements.
 - Add successful completion print.
+
+## 0.0.5
+
+- Fix exit code conditional
