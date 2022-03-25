@@ -14,3 +14,8 @@
 - Add tests
 - Expose some private library functions
 - Add ability to override the parsed copyright notice in the configuration file. ("copyrightNotice" field)
+
+## 0.0.4
+
+- Clean up print statements.
+- Add successful completion print.
