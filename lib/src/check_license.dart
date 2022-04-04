@@ -21,14 +21,23 @@ class LicenseDisplayWithPriority<D> {
   final LicenseStatus status;
 
   /// The priority of the liscense display based on the status.
-  late final int priority;
+  final int priority;
 
-  LicenseDisplayWithPriority._(this.display, this.status, this.priority);
+  /// The name of the package
+  final String name;
+
+  LicenseDisplayWithPriority._(
+    this.display,
+    this.status,
+    this.priority,
+    this.name,
+  );
 
   /// Constructs thedisplayed license with a priority set by status.
   factory LicenseDisplayWithPriority.withStatusPriority({
     required D display,
     required LicenseStatus licenseStatus,
+    required String packageName,
   }) {
     int priority = 0;
     switch (licenseStatus) {
@@ -63,7 +72,12 @@ class LicenseDisplayWithPriority<D> {
           break;
         }
     }
-    return LicenseDisplayWithPriority._(display, licenseStatus, priority);
+    return LicenseDisplayWithPriority._(
+      display,
+      licenseStatus,
+      priority,
+      packageName,
+    );
   }
 }
 
@@ -79,7 +93,8 @@ Future<List<LicenseDisplayWithPriority<D>>> checkAllPackageLicenses<D>({
   required bool filterApproved,
   required LicenseDisplayFunction<D> licenseDisplay,
   required PackageChecker packageConfig,
-  bool sort = false,
+  bool sortByPriority = false,
+  bool sortByName = false,
 }) async {
   List<LicenseDisplayWithPriority<D>> licenses = [];
 
@@ -102,22 +117,31 @@ Future<List<LicenseDisplayWithPriority<D>>> checkAllPackageLicenses<D>({
             licenseDisplay: licenseDisplay,
           ),
           licenseStatus: status,
+          packageName: package.name,
         ),
       );
     }
   }
 
-  if (sort) {
-    // Sort by priority
+  if (sortByPriority && sortByName) {
+    // sort by priority first
     licenses.sort((a, b) {
-      if (a.priority < b.priority) {
-        return -1;
+      int cmp = _prioritySort(a, b);
+      if (cmp != 0) {
+        return cmp;
       }
-      if (a.priority > b.priority) {
-        return 1;
-      }
-      return 0;
+      return _alphaSort(a, b);
     });
+  } else {
+    if (sortByPriority) {
+      // Sort by priority
+      licenses.sort(_prioritySort);
+    }
+
+    if (sortByName) {
+      // Sort by name
+      licenses.sort(_alphaSort);
+    }
   }
 
   return licenses;
@@ -136,4 +160,24 @@ Future<D> checkPackageLicense<D>({
     licenseStatus: await package.packageLicenseStatus,
     licenseName: await package.licenseName,
   );
+}
+
+int _alphaSort<D>(
+  LicenseDisplayWithPriority<D> a,
+  LicenseDisplayWithPriority<D> b,
+) {
+  return a.name.compareTo(b.name);
+}
+
+int _prioritySort<D>(
+  LicenseDisplayWithPriority<D> a,
+  LicenseDisplayWithPriority<D> b,
+) {
+  if (a.priority < b.priority) {
+    return -1;
+  }
+  if (a.priority > b.priority) {
+    return 1;
+  }
+  return 0;
 }

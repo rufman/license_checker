@@ -180,7 +180,7 @@ void main() {
         showDirectDepsOnly: false,
         filterApproved: false,
         licenseDisplay: licenseDisplay,
-        sort: true,
+        sortByPriority: true,
       );
 
       expect(result.map((e) => e.display.toString()), [
@@ -195,6 +195,85 @@ void main() {
       expect(result.map((e) => e.status), [
         LicenseStatus.approved,
         LicenseStatus.permitted,
+        LicenseStatus.unknown,
+        LicenseStatus.noLicense,
+        LicenseStatus.needsApproval,
+        LicenseStatus.rejected,
+      ]);
+    });
+
+    test(
+        'should check the license of all dependencies and sort them correctly by name',
+        () async {
+      PackageChecker packageConfig = MockedPackageChecker([
+        MockedDependencyChecker('Dodgers', LicenseStatus.approved),
+        MockedDependencyChecker('Giants', LicenseStatus.rejected),
+        MockedDependencyChecker('Angles', LicenseStatus.unknown),
+        MockedDependencyChecker('As', LicenseStatus.permitted),
+        MockedDependencyChecker('Padres', LicenseStatus.needsApproval),
+        MockedDependencyChecker('Rockies', LicenseStatus.noLicense),
+      ]);
+      List<LicenseDisplayWithPriority<String>> result =
+          await checkAllPackageLicenses(
+        packageConfig: packageConfig,
+        showDirectDepsOnly: false,
+        filterApproved: false,
+        licenseDisplay: licenseDisplay,
+        sortByName: true,
+      );
+
+      expect(result.map((e) => e.display.toString()), [
+        'Angles swag LicenseStatus.unknown',
+        'As swag LicenseStatus.permitted',
+        'Dodgers swag LicenseStatus.approved',
+        'Giants swag LicenseStatus.rejected',
+        'Padres swag LicenseStatus.needsApproval',
+        'Rockies swag LicenseStatus.noLicense',
+      ]);
+
+      expect(result.map((e) => e.status), [
+        LicenseStatus.unknown,
+        LicenseStatus.permitted,
+        LicenseStatus.approved,
+        LicenseStatus.rejected,
+        LicenseStatus.needsApproval,
+        LicenseStatus.noLicense,
+      ]);
+    });
+
+    test(
+        'should check the license of all dependencies and sort them correctly by status priority and then name',
+        () async {
+      PackageChecker packageConfig = MockedPackageChecker([
+        MockedDependencyChecker('Dodgers', LicenseStatus.approved),
+        MockedDependencyChecker('Giants', LicenseStatus.rejected),
+        MockedDependencyChecker('Angles', LicenseStatus.unknown),
+        MockedDependencyChecker('As', LicenseStatus.permitted),
+        MockedDependencyChecker('Padres', LicenseStatus.needsApproval),
+        MockedDependencyChecker('Rockies', LicenseStatus.noLicense),
+      ]);
+      List<LicenseDisplayWithPriority<String>> result =
+          await checkAllPackageLicenses(
+        packageConfig: packageConfig,
+        showDirectDepsOnly: false,
+        filterApproved: false,
+        licenseDisplay: licenseDisplay,
+        sortByPriority: true,
+        sortByName: true,
+      );
+
+      expect(result.map((e) => e.display.toString()), [
+        'As swag LicenseStatus.permitted',
+        'Dodgers swag LicenseStatus.approved',
+        'Angles swag LicenseStatus.unknown',
+        'Rockies swag LicenseStatus.noLicense',
+        'Padres swag LicenseStatus.needsApproval',
+        'Giants swag LicenseStatus.rejected',
+      ]);
+
+      expect(result.map((e) => e.status), [
+        LicenseStatus.permitted,
+        LicenseStatus.approved,
         LicenseStatus.unknown,
         LicenseStatus.noLicense,
         LicenseStatus.needsApproval,

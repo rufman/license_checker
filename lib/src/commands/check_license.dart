@@ -21,19 +21,34 @@ class CheckLicenses extends Command<int> {
   /// Creates the check-license command and add a flag to show only "problematic"
   /// packages (non approved and permitted packages).
   CheckLicenses() {
-    argParser.addFlag(
-      'problematic',
-      abbr: 'p',
-      help:
-          'Show only package with problematic license statuses (filter approved and permitted packages).',
-      negatable: false,
-      defaultsTo: false,
-    );
+    argParser
+      ..addFlag(
+        'problematic',
+        abbr: 'i',
+        help:
+            'Show only package with problematic license statuses (filter approved and permitted packages).',
+        negatable: false,
+        defaultsTo: false,
+      )
+      ..addFlag(
+        'alpha-sort',
+        abbr: 'a',
+        help: 'Sort list of packages alphabetically',
+        defaultsTo: false,
+      )
+      ..addFlag(
+        'priority-sort',
+        abbr: 'p',
+        help: 'Sort list of packages by the priority of their license status',
+        defaultsTo: false,
+      );
   }
 
   @override
   Future<int> run() async {
     bool filterApproved = argResults?['problematic'];
+    bool prioritySort = argResults?['priority-sort'];
+    bool alphaSort = argResults?['alpha-sort'];
     bool showDirectDepsOnly = globalResults?['direct'];
     String configPath = globalResults?['config'];
 
@@ -59,6 +74,8 @@ class CheckLicenses extends Command<int> {
         showDirectDepsOnly: showDirectDepsOnly,
         filterApproved: filterApproved,
         licenseDisplay: formatLicenseRow,
+        sortByPriority: prioritySort,
+        sortByName: alphaSort,
       );
     } on FileSystemException catch (error) {
       printError(error.message);
