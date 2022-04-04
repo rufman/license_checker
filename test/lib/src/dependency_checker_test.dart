@@ -167,6 +167,20 @@ void main() {
       ),
     );
 
+    Config configChanged = Config.fromFile(
+      File('test/lib/src/fixtures/valid_config_changed_approved_pkg_lic.yaml'),
+    );
+    DependencyChecker dcChanged = DependencyChecker(
+      config: configChanged,
+      package: Package(
+        'mlb',
+        Uri(
+          scheme: 'file',
+          path: Directory.current.absolute.path + '/test/lib/src/fixtures/mlb/',
+        ),
+      ),
+    );
+
     List<DependencyTest<Object?>> _validTests = [
       DependencyTest<Object?>(
         testProperty: (d) => d.name,
@@ -209,6 +223,14 @@ void main() {
         },
         expectedReturnMatcher: () => unknownSource,
         testDescription: 'should return $unknownSource as the source location',
+      ),
+      DependencyTest<Object?>(
+        testProperty: (d) async {
+          return dcChanged.packageLicenseStatus;
+        },
+        expectedReturnMatcher: () => LicenseStatus.needsApproval,
+        testDescription:
+            "should return needs approval, if a previously approved package change it's license",
       ),
     ];
 
