@@ -23,3 +23,7 @@
 ## 0.0.5
 
 - Fix exit code conditional
+
+## 1.0.0
+
+- Add priority and alphabetical sorting option
