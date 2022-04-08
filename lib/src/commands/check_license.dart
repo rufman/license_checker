@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:barbecue/barbecue.dart';
+import 'package:io/io.dart';
 
 import 'package:license_checker/src/config.dart';
 import 'package:license_checker/src/format.dart';
@@ -58,7 +59,7 @@ class CheckLicenses extends Command<int> {
 
     Config? config = loadConfig(configPath);
     if (config == null) {
-      return 1;
+      return ExitCode.ioError.code;
     }
 
     printInfo(
@@ -79,7 +80,7 @@ class CheckLicenses extends Command<int> {
       );
     } on FileSystemException catch (error) {
       printError(error.message);
-      return 1;
+      return ExitCode.ioError.code;
     }
 
     if (rows.isNotEmpty) {
@@ -91,9 +92,9 @@ class CheckLicenses extends Command<int> {
           r.status != LicenseStatus.approved &&
           r.status != LicenseStatus.permitted,
     )
-        ? 1
-        : 0;
-    if (rows.isEmpty || exitCode == 0) {
+        ? ExitCode.software.code
+        : ExitCode.success.code;
+    if (rows.isEmpty || exitCode == ExitCode.success.code) {
       printSuccess('No package licenses need approval!');
     }
 
