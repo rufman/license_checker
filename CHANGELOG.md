@@ -27,3 +27,8 @@
 ## 1.0.0
 
 - Add priority and alphabetical sorting option
+
+## 1.1.0
+
+- Add version flag
+- Use proper exit codes
