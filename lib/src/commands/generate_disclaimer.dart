@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:barbecue/barbecue.dart';
+import 'package:io/io.dart';
 import 'package:path/path.dart';
 
 import 'package:license_checker/src/config.dart';
@@ -46,7 +47,7 @@ class GenerateDisclaimer extends Command<int> {
 
     Config? config = loadConfig(configPath);
     if (config == null) {
-      return 1;
+      return ExitCode.ioError.code;
     }
 
     printInfo(
@@ -91,10 +92,10 @@ class GenerateDisclaimer extends Command<int> {
       }
     } else {
       printError('User stopped the disclaimer writing process.');
-      return 1;
+      return ExitCode.cantCreate.code;
     }
 
-    return 0;
+    return ExitCode.success.code;
   }
 
   bool _promptYN(String prompt) {
