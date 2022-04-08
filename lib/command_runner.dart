@@ -1,4 +1,6 @@
 import 'package:args/command_runner.dart';
+import 'package:license_checker/src/commands/utils.dart';
+import 'package:license_checker/version.g.dart';
 
 /// Overarching command runner for license checking related commands
 class LicenseCommandRunner extends CommandRunner<int> {
@@ -15,6 +17,12 @@ class LicenseCommandRunner extends CommandRunner<int> {
         ) {
     argParser
       ..addFlag(
+        'version',
+        abbr: 'v',
+        negatable: false,
+        help: 'Print the version.',
+      )
+      ..addFlag(
         'direct',
         abbr: 'd',
         help: 'Show license only for direct dependencies.',
@@ -28,5 +36,14 @@ class LicenseCommandRunner extends CommandRunner<int> {
             'The path to the YAML config specifing approved and rejected licenses and approved packages.',
         mandatory: true,
       );
+  }
+
+  @override
+  Future<int?> run(Iterable<String> args) {
+    if (args.any((e) => e.contains('version') || e == '-v')) {
+      printInfo(licenseCheckerVersion);
+      return Future.value(0);
+    }
+    return super.run(args);
   }
 }
