@@ -32,3 +32,8 @@
 
 - Add version flag
 - Use proper exit codes
+
+## 1.2.0
+
+- Add yes flag to skip prompts when generating disclaimers
+- Fix exit codes
