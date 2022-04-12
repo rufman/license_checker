@@ -24,6 +24,12 @@ class GenerateDisclaimer extends Command<int> {
   /// The [path] flag allows the user to customize the write location for the discalimer file.
   GenerateDisclaimer() {
     argParser
+      ..addFlag(
+        'yes',
+        abbr: 'y',
+        negatable: false,
+        help: 'Write the disclaimers to the file without prompting.',
+      )
       ..addOption(
         'file',
         abbr: 'f',
@@ -42,6 +48,7 @@ class GenerateDisclaimer extends Command<int> {
   Future<int> run() async {
     String disclaimerName = argResults?['file'];
     String outputPath = argResults?['path'];
+    bool skipPrompts = argResults?['yes'];
     bool showDirectDepsOnly = globalResults?['direct'];
     String configPath = globalResults?['config'];
 
@@ -71,22 +78,19 @@ class GenerateDisclaimer extends Command<int> {
     );
 
     // Write disclaimer
+    String outputFilePath = join(outputPath, disclaimerName);
+    if (skipPrompts) {
+      _writeFile(outputFilePath: outputFilePath, disclaimer: disclaimer);
+      return ExitCode.success.code;
+    }
+
     bool correctInfo = _promptYN('Is this information correct?');
     if (correctInfo) {
-      String outputFilePath = join(outputPath, disclaimerName);
       bool writeFile = _promptYN(
         'Would you like to write the disclaimer to $outputFilePath?',
       );
       if (writeFile) {
-        File output = File(outputFilePath);
-        printInfo('Writing disclaimer to file $outputFilePath ...');
-        StringBuffer disclaimerText = StringBuffer();
-        for (StringBuffer d in disclaimer.file) {
-          disclaimerText.write(d.toString());
-        }
-        output.writeAsStringSync(disclaimerText.toString());
-
-        printSuccess('Finished writing disclaimer.');
+        _writeFile(outputFilePath: outputFilePath, disclaimer: disclaimer);
       } else {
         printError('Did not write disclaimer.');
       }
@@ -110,5 +114,20 @@ class GenerateDisclaimer extends Command<int> {
     // not y or n, so repromted
     stdout.writeln('you entered $input, please enter y or n.');
     return _promptYN(prompt);
+  }
+
+  void _writeFile({
+    required DisclaimerDisplay<List<Row>, List<StringBuffer>> disclaimer,
+    required String outputFilePath,
+  }) {
+    File output = File(outputFilePath);
+    printInfo('Writing disclaimer to file $outputFilePath ...');
+    StringBuffer disclaimerText = StringBuffer();
+    for (StringBuffer d in disclaimer.file) {
+      disclaimerText.write(d.toString());
+    }
+    output.writeAsStringSync(disclaimerText.toString());
+
+    printSuccess('Finished writing disclaimer.');
   }
 }
