@@ -17,7 +17,7 @@ void main(List<String> arguments) async {
 
   try {
     int? errors = await cmd.run(arguments);
-    if (errors != null) {
+    if (errors != null && errors != 0) {
       exitCode = ExitCode.software.code;
     }
   } on UsageException catch (e) {
