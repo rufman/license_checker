@@ -153,6 +153,81 @@ void main() {
     }
   });
 
+  group('Unknown license file', () {
+    Config config =
+        Config.fromFile(File('test/lib/src/fixtures/valid_config.yaml'));
+    DependencyChecker dc = DependencyChecker(
+      config: config,
+      package: Package(
+        'mets',
+        Uri(
+          scheme: 'file',
+          path:
+              Directory.current.absolute.path + '/test/lib/src/fixtures/mets/',
+        ),
+      ),
+    );
+
+    Config configChanged = Config.fromFile(
+      File('test/lib/src/fixtures/valid_config_approved_unknown_license.yaml'),
+    );
+    DependencyChecker dcChanged = DependencyChecker(
+      config: configChanged,
+      package: Package(
+        'mets',
+        Uri(
+          scheme: 'file',
+          path:
+              Directory.current.absolute.path + '/test/lib/src/fixtures/mets/',
+        ),
+      ),
+    );
+
+    List<DependencyTest<Object?>> _validTests = [
+      DependencyTest<Object?>(
+        testProperty: (d) => d.name,
+        expectedReturnMatcher: () => 'mets',
+        testDescription: 'should get the package name from Package',
+      ),
+      DependencyTest<Object?>(
+        testProperty: (d) => d.licenseFile?.path,
+        expectedReturnMatcher: () =>
+            Directory.current.absolute.path +
+            '/test/lib/src/fixtures/mets/LICENSE',
+        testDescription: 'should return the license file',
+      ),
+      DependencyTest<Object?>(
+        testProperty: (d) async {
+          return d.licenseName;
+        },
+        expectedReturnMatcher: () => unknownLicense,
+        testDescription: 'should return unknown-license as license name',
+      ),
+      DependencyTest<Object?>(
+        testProperty: (d) async {
+          return d.packageLicenseStatus;
+        },
+        expectedReturnMatcher: () => LicenseStatus.unknown,
+        testDescription:
+            'should return that this package has unknown license status',
+      ),
+      DependencyTest<Object?>(
+        testProperty: (d) async {
+          return dcChanged.packageLicenseStatus;
+        },
+        expectedReturnMatcher: () => LicenseStatus.approved,
+        testDescription:
+            'should return that this package has approved license status',
+      ),
+    ];
+
+    for (DependencyTest<Object?> t in _validTests) {
+      test(t.testDescription, () async {
+        expect(await t.testProperty(dc), t.expectedReturnMatcher());
+      });
+    }
+  });
+
   group('Approved Package', () {
     Config config =
         Config.fromFile(File('test/lib/src/fixtures/valid_config.yaml'));
