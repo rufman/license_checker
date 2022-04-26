@@ -92,7 +92,7 @@ class DependencyChecker {
     }
 
     if (lname == unknownLicense) {
-      return LicenseStatus.unknown;
+      return _checkApprovedPackages(unknownLicense) ?? LicenseStatus.unknown;
     }
 
     // Check different cases defined in the config
