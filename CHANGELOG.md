@@ -37,3 +37,7 @@
 
 - Add yes flag to skip prompts when generating disclaimers
 - Fix exit codes
+
+## 1.2.1
+
+- Allow unknown license to be approved via the config file
