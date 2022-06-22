@@ -1,0 +1,13 @@
+permittedLicenses:
+  - Apache-2.0
+  - BSD-3-Clause
+
+rejectedLicenses:
+  - MIT
+
+approvedPackages:
+  GPL-1.0:
+    - mlb
+
+packageLicenseOverride:
+  dodgers: BSD-3-Clause

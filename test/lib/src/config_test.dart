@@ -163,15 +163,32 @@ void main() {
         testDescription:
             'throw format exception when copyright notice is not defined with string keys',
         fileName: 'invalid_copyright_string_key_config',
-        expectedErrorMessage:
-            '`copyrightNotice` must be keyed by a string package name',
+        expectedErrorMessage: '`copyrightNotice` must be keyed by a string',
       ),
       _ConfigErrorTest(
         testDescription:
             'throw format exception when copyright notice is not defined with string values',
         fileName: 'invalid_copyright_string_value_config',
+        expectedErrorMessage: '`copyrightNotice` value must be a string',
+      ),
+      _ConfigErrorTest(
+        testDescription:
+            'throw format exception when package license override is not defined as a map',
+        fileName: 'invalid_license_override_list_config',
+        expectedErrorMessage: '`packageLicenseOverride` not defined as a map',
+      ),
+      _ConfigErrorTest(
+        testDescription:
+            'throw format exception when package license override is not defined with string keys',
+        fileName: 'invalid_license_override_string_key_config',
         expectedErrorMessage:
-            '`copyrightNotice` value must bea string copyright notice',
+            '`packageLicenseOverride` must be keyed by a string',
+      ),
+      _ConfigErrorTest(
+        testDescription:
+            'throw format exception when package license override is not defined with string values',
+        fileName: 'invalid_license_override_string_value_config',
+        expectedErrorMessage: '`packageLicenseOverride` value must be a string',
       ),
     ];
 

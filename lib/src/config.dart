@@ -16,11 +16,15 @@ class Config {
   /// Map to override copyright notices for packages, if they are not parsed correctly.
   final Map<String, String> copyrightNotice;
 
+  /// Map to override licenses for packages, if they are not parsed correctly.
+  final Map<String, String> packageLicenseOverride;
+
   Config._({
     required this.permittedLicenses,
     required this.rejectedLicenses,
     required this.approvedPackages,
     required this.copyrightNotice,
+    required this.packageLicenseOverride,
   });
 
   /// Parses and creates config from a file
@@ -37,6 +41,7 @@ class Config {
     Object? rejectedLicenses = config['rejectedLicenses'];
     Object? approvedPackages = config['approvedPackages'];
     Object? copyrightNotice = config['copyrightNotice'];
+    Object? packageLicenseOverride = config['packageLicenseOverride'];
     if (permittedLicenses == null) {
       return throw FormatException('`permittedLicenses` not defined');
     }
@@ -83,35 +88,46 @@ class Config {
         checkedApprovedPackages[license] = stringApprovedPackages;
       }
     }
-    Map<String, String> checkedCopyrightNotice = {};
-    if (copyrightNotice != null) {
-      if (copyrightNotice is! Map) {
-        return throw FormatException('`copyrightNotice` not defined as a map');
-      }
-      for (MapEntry<dynamic, dynamic> entry in copyrightNotice.entries) {
-        Object packageName = entry.key;
-        Object copyright = entry.value;
+    Map<String, String> checkedCopyrightNotice =
+        _checkStringMap(copyrightNotice, 'copyrightNotice');
 
-        if (packageName is! String) {
-          return throw FormatException(
-            '`copyrightNotice` must be keyed by a string package name',
-          );
-        }
-
-        if (copyright is! String) {
-          return throw FormatException(
-            '`copyrightNotice` value must bea string copyright notice',
-          );
-        }
-        checkedCopyrightNotice[packageName] = copyright;
-      }
-    }
+    Map<String, String> checkedPackageLicenseOverride =
+        _checkStringMap(packageLicenseOverride, 'packageLicenseOverride');
 
     return Config._(
       permittedLicenses: stringLicenses,
       approvedPackages: checkedApprovedPackages,
       rejectedLicenses: stringRejectLicenses,
       copyrightNotice: checkedCopyrightNotice,
+      packageLicenseOverride: checkedPackageLicenseOverride,
     );
   }
+}
+
+Map<String, String> _checkStringMap(Object? map, String variableName) {
+  Map<String, String> checkedMap = {};
+  if (map != null) {
+    if (map is! Map) {
+      return throw FormatException('`$variableName` not defined as a map');
+    }
+    for (MapEntry<dynamic, dynamic> entry in map.entries) {
+      Object mapKey = entry.key;
+      Object mapValue = entry.value;
+
+      if (mapKey is! String) {
+        return throw FormatException(
+          '`$variableName` must be keyed by a string',
+        );
+      }
+
+      if (mapValue is! String) {
+        return throw FormatException(
+          '`$variableName` value must be a string',
+        );
+      }
+      checkedMap[mapKey] = mapValue;
+    }
+  }
+
+  return checkedMap;
 }
