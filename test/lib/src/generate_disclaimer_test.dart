@@ -116,8 +116,10 @@ void main() {
         disclaimerFileDisplay: disclaimerFileDisplay,
       );
 
-      expect(result.cli,
-          'cli: dodgers BSD-3-Clause 1958 Los Angeles Chavez Ravine');
+      expect(
+        result.cli,
+        'cli: dodgers BSD-3-Clause 1958 Los Angeles Chavez Ravine',
+      );
       expect(
         result.file,
         'file: dodgers BSD-3-Clause 1958 Los Angeles Chavez Ravine /dodger/stadium',
