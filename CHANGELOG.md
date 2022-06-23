@@ -41,3 +41,8 @@
 ## 1.2.1
 
 - Allow unknown license to be approved via the config file
+
+## 1.3.0
+
+- Allow overriding package license text used in disclaimer.
+- Allow omitting of packages from the generated disclaimer.
