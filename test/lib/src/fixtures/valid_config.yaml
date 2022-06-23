@@ -7,3 +7,9 @@ rejectedLicenses:
 approvedPackages:
   GPL-1.0:
     - mlb
+
+omitDisclaimer:
+  - angles
+
+packageLicenseOverride:
+  dodgers: BSD-3-Clause

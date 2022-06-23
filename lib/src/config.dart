@@ -4,20 +4,23 @@ import 'package:yaml/yaml.dart';
 
 /// Represents the config parsed from a config file for the license checker.
 class Config {
-  /// List of permitted license.
+  /// [List] of permitted license.
   final List<String> permittedLicenses;
 
-  /// List of licenses that are not allowed to be used by default.
+  /// [List] of licenses that are not allowed to be used by default.
   final List<String> rejectedLicenses;
 
-  /// Packages by license that have been explicitly approved.
+  /// [Map] for packages by license that have been explicitly approved.
   final Map<String, List<String>> approvedPackages;
 
-  /// Map to override copyright notices for packages, if they are not parsed correctly.
+  /// [Map] to override copyright notices for packages, if they are not parsed correctly.
   final Map<String, String> copyrightNotice;
 
-  /// Map to override licenses for packages, if they are not parsed correctly.
+  /// [Map] to override licenses for packages, if they are not parsed correctly.
   final Map<String, String> packageLicenseOverride;
+
+  /// [List] of packages who's license and copyright notice should not be added to the discalimer
+  final List<String> omitDisclaimer;
 
   Config._({
     required this.permittedLicenses,
@@ -25,6 +28,7 @@ class Config {
     required this.approvedPackages,
     required this.copyrightNotice,
     required this.packageLicenseOverride,
+    required this.omitDisclaimer,
   });
 
   /// Parses and creates config from a file
@@ -42,6 +46,7 @@ class Config {
     Object? approvedPackages = config['approvedPackages'];
     Object? copyrightNotice = config['copyrightNotice'];
     Object? packageLicenseOverride = config['packageLicenseOverride'];
+    Object? omitDisclaimer = config['omitDisclaimer'];
     if (permittedLicenses == null) {
       return throw FormatException('`permittedLicenses` not defined');
     }
@@ -55,12 +60,21 @@ class Config {
         '`rejectedLicenses` is not defined as a list',
       );
     }
+    if (omitDisclaimer != null && omitDisclaimer is! List) {
+      return throw FormatException(
+        '`omitDisclaimer` is not defined as a list',
+      );
+    }
 
     List<String> stringRejectLicenses = [];
+    List<String> stringOmitDisclaimer = [];
     List<String> stringLicenses =
         permittedLicenses.whereType<String>().toList();
     if (rejectedLicenses != null && rejectedLicenses is List) {
       stringRejectLicenses = rejectedLicenses.whereType<String>().toList();
+    }
+    if (omitDisclaimer != null && omitDisclaimer is List) {
+      stringOmitDisclaimer = omitDisclaimer.whereType<String>().toList();
     }
 
     Map<String, List<String>> checkedApprovedPackages = {};
@@ -100,6 +114,7 @@ class Config {
       rejectedLicenses: stringRejectLicenses,
       copyrightNotice: checkedCopyrightNotice,
       packageLicenseOverride: checkedPackageLicenseOverride,
+      omitDisclaimer: stringOmitDisclaimer,
     );
   }
 }
