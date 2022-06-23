@@ -23,6 +23,8 @@ class _ConfigSuccessTest {
   final List<String> expectedRejectedLicenses;
   final Map<String, List<String>> expectedApprovedPackages;
   final Map<String, String> expectedCopyrightNotice;
+  final List<String> expectedOmitDisclaimer;
+  final Map<String, String> expectedPackageLicenseOverride;
 
   _ConfigSuccessTest({
     required this.fileName,
@@ -31,6 +33,8 @@ class _ConfigSuccessTest {
     required this.expectedApprovedPackages,
     required this.expectedCopyrightNotice,
     required this.testDescription,
+    required this.expectedOmitDisclaimer,
+    required this.expectedPackageLicenseOverride,
   });
 }
 
@@ -58,6 +62,8 @@ void main() {
         expectedRejectedLicenses: <String>[],
         expectedApprovedPackages: <String, List<String>>{},
         expectedCopyrightNotice: {},
+        expectedOmitDisclaimer: [],
+        expectedPackageLicenseOverride: {},
       ),
       _ConfigSuccessTest(
         testDescription: 'Parse valid config with everything defined',
@@ -68,6 +74,8 @@ void main() {
           'GPL-1.0': ['mlb'],
         },
         expectedCopyrightNotice: {},
+        expectedOmitDisclaimer: ['angles'],
+        expectedPackageLicenseOverride: {'dodgers': 'BSD-3-Clause'},
       ),
       _ConfigSuccessTest(
         testDescription: 'Parse valid config with no rejected licenses',
@@ -78,6 +86,8 @@ void main() {
           'GPL': ['mlb'],
         },
         expectedCopyrightNotice: {},
+        expectedOmitDisclaimer: [],
+        expectedPackageLicenseOverride: {},
       ),
       _ConfigSuccessTest(
         testDescription: 'Parse valid config and ignore non string licenses',
@@ -88,6 +98,8 @@ void main() {
           'GPL': ['mlb'],
         },
         expectedCopyrightNotice: {},
+        expectedOmitDisclaimer: [],
+        expectedPackageLicenseOverride: {},
       ),
       _ConfigSuccessTest(
         testDescription: 'Parse valid config with copyright notice overrides',
@@ -98,6 +110,8 @@ void main() {
           'GPL-1.0': ['mlb'],
         },
         expectedCopyrightNotice: {'mlb': '2000 MLB.'},
+        expectedOmitDisclaimer: [],
+        expectedPackageLicenseOverride: {},
       ),
     ];
     for (_ConfigSuccessTest t in configSuccessTests) {
@@ -109,6 +123,11 @@ void main() {
         expect(validConfig.rejectedLicenses, t.expectedRejectedLicenses);
         expect(validConfig.approvedPackages, t.expectedApprovedPackages);
         expect(validConfig.copyrightNotice, t.expectedCopyrightNotice);
+        expect(validConfig.omitDisclaimer, t.expectedOmitDisclaimer);
+        expect(
+          validConfig.packageLicenseOverride,
+          t.expectedPackageLicenseOverride,
+        );
       });
     }
   });
@@ -189,6 +208,12 @@ void main() {
             'throw format exception when package license override is not defined with string values',
         fileName: 'invalid_license_override_string_value_config',
         expectedErrorMessage: '`packageLicenseOverride` value must be a string',
+      ),
+      _ConfigErrorTest(
+        testDescription:
+            'throw format exception when omit package license is not defined as a list',
+        fileName: 'invalid_omit_config',
+        expectedErrorMessage: '`omitDisclaimer` is not defined as a list',
       ),
     ];
 

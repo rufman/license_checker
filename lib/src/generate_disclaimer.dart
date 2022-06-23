@@ -47,11 +47,12 @@ Future<DisclaimerDisplay<List<C>, List<F>>> generateDisclaimers<C, F>({
       DisclaimerDisplay(cli: [], file: []);
 
   for (DependencyChecker package in packageConfig.packages) {
-    if (showDirectDepsOnly) {
+    if (showDirectDepsOnly &&
+            !packageConfig.pubspec.dependencies.containsKey(package.name) ||
+        config.omitDisclaimer.contains(package.name)) {
       // Ignore dependencies not defined in the packages pubspec.yaml
-      if (!packageConfig.pubspec.dependencies.containsKey(package.name)) {
-        continue;
-      }
+      // Do not generate disclaimer for ignored packages
+      continue;
     }
     DisclaimerDisplay<C, F>? packageDisclaimer =
         await generatePackageDisclaimer<C, F>(

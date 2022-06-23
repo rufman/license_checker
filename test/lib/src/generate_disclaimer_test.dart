@@ -50,7 +50,7 @@ class MockedPackageChecker extends Mock implements PackageChecker {
   @override
   final Pubspec pubspec = Pubspec({
     'name': 'MLB',
-    'dependencies': {'Dodgers': '1.0.0', 'Giants': '1.0.0'}
+    'dependencies': {'Dodgers': '1.0.0', 'angles': '1.0.0'}
   });
 
   MockedPackageChecker(this.packages);
@@ -165,6 +165,11 @@ void main() {
           LicenseStatus.approved,
           File('/crypto/.com'),
         ),
+        MockedDependencyChecker.withLicenseFile(
+          'angles',
+          LicenseStatus.approved,
+          File('/angles/stadium'),
+        ),
       ]);
       DisclaimerDisplay<List<String>, List<String>> result =
           await generateDisclaimers<String, String>(
@@ -211,6 +216,11 @@ void main() {
           'Kings',
           LicenseStatus.approved,
           File('/crypto/.com'),
+        ),
+        MockedDependencyChecker.withLicenseFile(
+          'angles',
+          LicenseStatus.approved,
+          File('/angles/stadium'),
         ),
       ]);
       DisclaimerDisplay<List<String>, List<String>> result =
