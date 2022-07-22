@@ -11,4 +11,4 @@ doc/api/
 
 # Editor files
 .vscode
-
+.DS_Store

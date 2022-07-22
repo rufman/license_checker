@@ -25,6 +25,7 @@ class _ConfigSuccessTest {
   final Map<String, String> expectedCopyrightNotice;
   final List<String> expectedOmitDisclaimer;
   final Map<String, String> expectedPackageLicenseOverride;
+  final Map<String, String> expectedPackageSourceOverride;
 
   _ConfigSuccessTest({
     required this.fileName,
@@ -35,6 +36,7 @@ class _ConfigSuccessTest {
     required this.testDescription,
     required this.expectedOmitDisclaimer,
     required this.expectedPackageLicenseOverride,
+    required this.expectedPackageSourceOverride,
   });
 }
 
@@ -64,6 +66,7 @@ void main() {
         expectedCopyrightNotice: {},
         expectedOmitDisclaimer: [],
         expectedPackageLicenseOverride: {},
+        expectedPackageSourceOverride: {},
       ),
       _ConfigSuccessTest(
         testDescription: 'Parse valid config with everything defined',
@@ -73,9 +76,10 @@ void main() {
         expectedApprovedPackages: {
           'GPL-1.0': ['mlb'],
         },
-        expectedCopyrightNotice: {},
+        expectedCopyrightNotice: {'mlb': '2000 MLB.'},
         expectedOmitDisclaimer: ['angles'],
         expectedPackageLicenseOverride: {'dodgers': 'BSD-3-Clause'},
+        expectedPackageSourceOverride: {'dodgers': 'https://dodgers.com'},
       ),
       _ConfigSuccessTest(
         testDescription: 'Parse valid config with no rejected licenses',
@@ -88,6 +92,7 @@ void main() {
         expectedCopyrightNotice: {},
         expectedOmitDisclaimer: [],
         expectedPackageLicenseOverride: {},
+        expectedPackageSourceOverride: {},
       ),
       _ConfigSuccessTest(
         testDescription: 'Parse valid config and ignore non string licenses',
@@ -100,6 +105,7 @@ void main() {
         expectedCopyrightNotice: {},
         expectedOmitDisclaimer: [],
         expectedPackageLicenseOverride: {},
+        expectedPackageSourceOverride: {},
       ),
       _ConfigSuccessTest(
         testDescription: 'Parse valid config with copyright notice overrides',
@@ -112,6 +118,33 @@ void main() {
         expectedCopyrightNotice: {'mlb': '2000 MLB.'},
         expectedOmitDisclaimer: [],
         expectedPackageLicenseOverride: {},
+        expectedPackageSourceOverride: {},
+      ),
+      _ConfigSuccessTest(
+        testDescription: 'Parse valid config with license overrides',
+        fileName: 'valid_config_license_override',
+        expectedPermittedLicenses: ['Apache-2.0', 'BSD-3-Clause'],
+        expectedRejectedLicenses: ['MIT'],
+        expectedApprovedPackages: {
+          'GPL-1.0': ['mlb'],
+        },
+        expectedCopyrightNotice: {},
+        expectedOmitDisclaimer: [],
+        expectedPackageLicenseOverride: {'dodgers': 'BSD-3-Clause'},
+        expectedPackageSourceOverride: {},
+      ),
+      _ConfigSuccessTest(
+        testDescription: 'Parse valid config with source overrides',
+        fileName: 'valid_config_source_override',
+        expectedPermittedLicenses: ['Apache-2.0', 'BSD-3-Clause'],
+        expectedRejectedLicenses: ['MIT'],
+        expectedApprovedPackages: {
+          'GPL-1.0': ['mlb'],
+        },
+        expectedCopyrightNotice: {},
+        expectedOmitDisclaimer: [],
+        expectedPackageLicenseOverride: {},
+        expectedPackageSourceOverride: {'dodgers': 'https://dodgers.com'},
       ),
     ];
     for (_ConfigSuccessTest t in configSuccessTests) {
@@ -127,6 +160,10 @@ void main() {
         expect(
           validConfig.packageLicenseOverride,
           t.expectedPackageLicenseOverride,
+        );
+        expect(
+          validConfig.packageSourceOverride,
+          t.expectedPackageSourceOverride,
         );
       });
     }
@@ -208,6 +245,25 @@ void main() {
             'throw format exception when package license override is not defined with string values',
         fileName: 'invalid_license_override_string_value_config',
         expectedErrorMessage: '`packageLicenseOverride` value must be a string',
+      ),
+      _ConfigErrorTest(
+        testDescription:
+            'throw format exception when package source override is not defined as a map',
+        fileName: 'invalid_source_override_list_config',
+        expectedErrorMessage: '`packageSourceOverride` not defined as a map',
+      ),
+      _ConfigErrorTest(
+        testDescription:
+            'throw format exception when package source override is not defined with string keys',
+        fileName: 'invalid_source_override_string_key_config',
+        expectedErrorMessage:
+            '`packageSourceOverride` must be keyed by a string',
+      ),
+      _ConfigErrorTest(
+        testDescription:
+            'throw format exception when package source override is not defined with string values',
+        fileName: 'invalid_source_override_string_value_config',
+        expectedErrorMessage: '`packageSourceOverride` value must be a string',
       ),
       _ConfigErrorTest(
         testDescription:

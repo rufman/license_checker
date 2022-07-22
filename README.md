@@ -25,8 +25,19 @@ rejectedLicenses:
 
 copyrightNotice:
   mlb: "2000 MLB."
+
+packageLicenseOverride:
+  dodgers: BSD-3-Clause
+
+packageSourceOverride:
+  dodgers: https://dodgers.com
+
+omitDisclaimer:
+  - angles
 ```
 
 This file can be referenced when calling `lic_ck check-licenses` with the `--config` option.
 
 `lic_ck` or `lic_ck -h` will display help
+
+For more details on the YAML config options see the [Config documentation](https://pub.dev/documentation/license_checker/latest/generate_disclaimer/Config-class.html)

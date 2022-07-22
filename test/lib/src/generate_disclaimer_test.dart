@@ -126,6 +126,33 @@ void main() {
       );
     });
 
+    test('should generate the disclaimer with package source overrides',
+        () async {
+      Config config = Config.fromFile(
+        File('test/lib/src/fixtures/valid_config_source_override.yaml'),
+      );
+      DisclaimerDisplay<String, String> result =
+          await generatePackageDisclaimer<String, String>(
+        config: config,
+        package: MockedDependencyChecker.withLicenseFile(
+          'dodgers',
+          LicenseStatus.approved,
+          File('/dodger/stadium'),
+        ),
+        disclaimerCLIDisplay: disclaimerCLIDisplay,
+        disclaimerFileDisplay: disclaimerFileDisplay,
+      );
+
+      expect(
+        result.cli,
+        'cli: dodgers swag 1958 Los Angeles https://dodgers.com',
+      );
+      expect(
+        result.file,
+        'file: dodgers swag 1958 Los Angeles https://dodgers.com /dodger/stadium',
+      );
+    });
+
     test(
         'should generate the disclaimer for a single package overriding the copyright with what is defined in the config',
         () async {
