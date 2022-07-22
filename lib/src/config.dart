@@ -19,6 +19,10 @@ class Config {
   /// [Map] to override licenses for packages, if they are not parsed correctly.
   final Map<String, String> packageLicenseOverride;
 
+  /// [Map] to override the source location for packages, if they are not parsed correctly
+  /// or present in the pubspec.yaml.
+  final Map<String, String> packageSourceOverride;
+
   /// [List] of packages who's license and copyright notice should not be added to the discalimer
   final List<String> omitDisclaimer;
 
@@ -28,6 +32,7 @@ class Config {
     required this.approvedPackages,
     required this.copyrightNotice,
     required this.packageLicenseOverride,
+    required this.packageSourceOverride,
     required this.omitDisclaimer,
   });
 
@@ -46,6 +51,7 @@ class Config {
     Object? approvedPackages = config['approvedPackages'];
     Object? copyrightNotice = config['copyrightNotice'];
     Object? packageLicenseOverride = config['packageLicenseOverride'];
+    Object? packageSourceOverride = config['packageSourceOverride'];
     Object? omitDisclaimer = config['omitDisclaimer'];
     if (permittedLicenses == null) {
       return throw FormatException('`permittedLicenses` not defined');
@@ -108,12 +114,16 @@ class Config {
     Map<String, String> checkedPackageLicenseOverride =
         _checkStringMap(packageLicenseOverride, 'packageLicenseOverride');
 
+    Map<String, String> checkedPackageSourceOverride =
+        _checkStringMap(packageSourceOverride, 'packageSourceOverride');
+
     return Config._(
       permittedLicenses: stringLicenses,
       approvedPackages: checkedApprovedPackages,
       rejectedLicenses: stringRejectLicenses,
       copyrightNotice: checkedCopyrightNotice,
       packageLicenseOverride: checkedPackageLicenseOverride,
+      packageSourceOverride: checkedPackageSourceOverride,
       omitDisclaimer: stringOmitDisclaimer,
     );
   }

@@ -1,5 +1,6 @@
 permittedLicenses:
   - Apache-2.0
+  - BSD-3-Clause
 
 rejectedLicenses:
   - MIT
@@ -7,15 +8,6 @@ rejectedLicenses:
 approvedPackages:
   GPL-1.0:
     - mlb
-
-omitDisclaimer:
-  - angles
-
-copyrightNotice:
-  mlb: "2000 MLB."
-
-packageLicenseOverride:
-  dodgers: BSD-3-Clause
 
 packageSourceOverride:
   dodgers: https://dodgers.com

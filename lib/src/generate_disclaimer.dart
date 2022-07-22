@@ -79,19 +79,21 @@ Future<DisclaimerDisplay<C, F>> generatePackageDisclaimer<C, F>({
       config.copyrightNotice[package.name] ?? await package.copyright;
   String licenseName =
       config.packageLicenseOverride[package.name] ?? await package.licenseName;
+  String sourceLocation =
+      config.packageSourceOverride[package.name] ?? package.sourceLocation;
 
   return DisclaimerDisplay(
     cli: disclaimerCLIDisplay(
       packageName: package.name,
       copyright: copyright,
       licenseName: licenseName,
-      sourceLocation: package.sourceLocation,
+      sourceLocation: sourceLocation,
     ),
     file: disclaimerFileDisplay(
       packageName: package.name,
       copyright: copyright,
       licenseName: licenseName,
-      sourceLocation: package.sourceLocation,
+      sourceLocation: sourceLocation,
       licenseFile: package.licenseFile,
     ),
   );

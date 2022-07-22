@@ -1,0 +1,12 @@
+permittedLicenses:
+  - Apache-2.0
+
+rejectedLicenses:
+  - MIT
+
+approvedPackages:
+  GPL-1.0:
+    - mlb
+
+packageSourceOverride:
+  mlb: true
