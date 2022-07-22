@@ -46,3 +46,7 @@
 
 - Allow overriding package license text used in disclaimer.
 - Allow omitting of packages from the generated disclaimer.
+
+## 1.4.0
+
+- Allow overrideing package source locations used in the disclaimer.
