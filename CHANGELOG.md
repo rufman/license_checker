@@ -50,3 +50,7 @@
 ## 1.4.0
 
 - Allow overrideing package source locations used in the disclaimer.
+
+## 1.5.0
+
+- Allow omitting of all dev dependencies in the generated disclaimer.
