@@ -30,6 +30,12 @@ class GenerateDisclaimer extends Command<int> {
         negatable: false,
         help: 'Write the disclaimers to the file without prompting.',
       )
+      ..addFlag(
+        'noDev',
+        abbr: 'n',
+        help: 'Do not include dev dependencies in the disclaimer.',
+        negatable: false,
+      )
       ..addOption(
         'file',
         abbr: 'f',
@@ -48,6 +54,7 @@ class GenerateDisclaimer extends Command<int> {
   Future<int> run() async {
     String disclaimerName = argResults?['file'];
     String outputPath = argResults?['path'];
+    bool noDevDependencies = argResults?['noDev'];
     bool skipPrompts = argResults?['yes'];
     bool showDirectDepsOnly = globalResults?['direct'];
     String configPath = globalResults?['config'];
@@ -69,6 +76,7 @@ class GenerateDisclaimer extends Command<int> {
       config: config,
       packageConfig: packageConfig,
       showDirectDepsOnly: showDirectDepsOnly,
+      noDevDependencies: noDevDependencies,
       disclaimerCLIDisplay: formatDisclaimerRow,
       disclaimerFileDisplay: formatDisclaimer,
     );
