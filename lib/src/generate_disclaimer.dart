@@ -40,6 +40,7 @@ Future<DisclaimerDisplay<List<C>, List<F>>> generateDisclaimers<C, F>({
   required Config config,
   required PackageChecker packageConfig,
   required bool showDirectDepsOnly,
+  required bool noDevDependencies,
   required DisclaimerCLIDisplayFunction<C> disclaimerCLIDisplay,
   required DisclaimerFileDisplayFunction<F> disclaimerFileDisplay,
 }) async {
@@ -52,6 +53,11 @@ Future<DisclaimerDisplay<List<C>, List<F>>> generateDisclaimers<C, F>({
         config.omitDisclaimer.contains(package.name)) {
       // Ignore dependencies not defined in the packages pubspec.yaml
       // Do not generate disclaimer for ignored packages
+      continue;
+    }
+    if (noDevDependencies &&
+        packageConfig.pubspec.devDependencies.containsKey(package.name)) {
+      // Ignore dev dependencies
       continue;
     }
     DisclaimerDisplay<C, F>? packageDisclaimer =

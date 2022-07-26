@@ -50,7 +50,9 @@ class MockedPackageChecker extends Mock implements PackageChecker {
   @override
   final Pubspec pubspec = Pubspec({
     'name': 'MLB',
-    'dependencies': {'Dodgers': '1.0.0', 'angles': '1.0.0'}
+    'dependencies': {'Dodgers': '1.0.0', 'angles': '1.0.0'},
+    'dev_dependencies': {'giants': '1.0.0'},
+    'packages': {'Dodgers': '1.0.0', 'angles': '1.0.0', 'giants': '1.0.0'},
   });
 
   MockedPackageChecker(this.packages);
@@ -197,17 +199,23 @@ void main() {
           LicenseStatus.approved,
           File('/angles/stadium'),
         ),
+        MockedDependencyChecker.withLicenseFile(
+          'giants',
+          LicenseStatus.approved,
+          File('/att/park'),
+        ),
       ]);
       DisclaimerDisplay<List<String>, List<String>> result =
           await generateDisclaimers<String, String>(
         config: config,
         packageConfig: packageConfig,
         showDirectDepsOnly: false,
+        noDevDependencies: false,
         disclaimerCLIDisplay: disclaimerCLIDisplay,
         disclaimerFileDisplay: disclaimerFileDisplay,
       );
 
-      expect(result.cli.length, equals(2));
+      expect(result.cli.length, equals(3));
       expect(
         result.cli[0],
         equals('cli: Dodgers swag 1958 Los Angeles Chavez Ravine'),
@@ -216,7 +224,11 @@ void main() {
         result.cli[1],
         equals('cli: Kings swag 1958 Los Angeles Chavez Ravine'),
       );
-      expect(result.file.length, equals(2));
+      expect(
+        result.cli[2],
+        equals('cli: giants swag 1958 Los Angeles Chavez Ravine'),
+      );
+      expect(result.file.length, equals(3));
       expect(
         result.file[0],
         equals(
@@ -226,6 +238,10 @@ void main() {
       expect(
         result.file[1],
         equals('file: Kings swag 1958 Los Angeles Chavez Ravine /crypto/.com'),
+      );
+      expect(
+        result.file[2],
+        equals('file: giants swag 1958 Los Angeles Chavez Ravine /att/park'),
       );
     });
 
@@ -255,6 +271,7 @@ void main() {
         config: config,
         packageConfig: packageConfig,
         showDirectDepsOnly: true,
+        noDevDependencies: false,
         disclaimerCLIDisplay: disclaimerCLIDisplay,
         disclaimerFileDisplay: disclaimerFileDisplay,
       );
@@ -270,6 +287,65 @@ void main() {
         equals(
           'file: Dodgers swag 1958 Los Angeles Chavez Ravine /dodger/stadium',
         ),
+      );
+    });
+
+    test(
+        'should generate the disclaimer for all dependencies of a package that are not dev dependencies',
+        () async {
+      Config config =
+          Config.fromFile(File('test/lib/src/fixtures/valid_config.yaml'));
+      PackageChecker packageConfig = MockedPackageChecker([
+        MockedDependencyChecker.withLicenseFile(
+          'Dodgers',
+          LicenseStatus.approved,
+          File('/dodger/stadium'),
+        ),
+        MockedDependencyChecker.withLicenseFile(
+          'Kings',
+          LicenseStatus.approved,
+          File('/crypto/.com'),
+        ),
+        MockedDependencyChecker.withLicenseFile(
+          'angles',
+          LicenseStatus.approved,
+          File('/angles/stadium'),
+        ),
+        MockedDependencyChecker.withLicenseFile(
+          'giants',
+          LicenseStatus.approved,
+          File('/att/park'),
+        ),
+      ]);
+      DisclaimerDisplay<List<String>, List<String>> result =
+          await generateDisclaimers<String, String>(
+        config: config,
+        packageConfig: packageConfig,
+        showDirectDepsOnly: false,
+        noDevDependencies: true,
+        disclaimerCLIDisplay: disclaimerCLIDisplay,
+        disclaimerFileDisplay: disclaimerFileDisplay,
+      );
+
+      expect(result.cli.length, equals(2));
+      expect(
+        result.cli[0],
+        equals('cli: Dodgers swag 1958 Los Angeles Chavez Ravine'),
+      );
+      expect(
+        result.cli[1],
+        equals('cli: Kings swag 1958 Los Angeles Chavez Ravine'),
+      );
+      expect(result.file.length, equals(2));
+      expect(
+        result.file[0],
+        equals(
+          'file: Dodgers swag 1958 Los Angeles Chavez Ravine /dodger/stadium',
+        ),
+      );
+      expect(
+        result.file[1],
+        equals('file: Kings swag 1958 Los Angeles Chavez Ravine /crypto/.com'),
       );
     });
   });
