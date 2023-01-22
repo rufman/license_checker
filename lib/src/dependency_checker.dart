@@ -29,19 +29,30 @@ RegExp coprightRegex = RegExp(
 );
 
 final _licenseFileNames = [
-  ...textFileNameCandidates('LICENSE'),
-  ...textFileNameCandidates('LICENCE'),
-  ...textFileNameCandidates('COPYING'),
-  ...textFileNameCandidates('UNLICENSE'),
-  ...textFileNameCandidates('License'),
-  ...textFileNameCandidates('Licence'),
-  ...textFileNameCandidates('Copying'),
-  ...textFileNameCandidates('Unlicense'),
-  ...textFileNameCandidates('license'),
-  ...textFileNameCandidates('licence'),
-  ...textFileNameCandidates('copying'),
-  ...textFileNameCandidates('unlicense'),
+  ..._textFileNameCandidates('LICENSE'),
+  ..._textFileNameCandidates('LICENCE'),
+  ..._textFileNameCandidates('COPYING'),
+  ..._textFileNameCandidates('UNLICENSE'),
+  ..._textFileNameCandidates('License'),
+  ..._textFileNameCandidates('Licence'),
+  ..._textFileNameCandidates('Copying'),
+  ..._textFileNameCandidates('Unlicense'),
+  ..._textFileNameCandidates('license'),
+  ..._textFileNameCandidates('licence'),
+  ..._textFileNameCandidates('copying'),
+  ..._textFileNameCandidates('unlicense'),
 ];
+
+/// Returns common file name candidates for [base] (specified without any extension).
+List<String> _textFileNameCandidates(String base) {
+  return <String>[
+    base,
+    '$base.md',
+    '$base.markdown',
+    '$base.mkdown',
+    '$base.txt',
+  ];
+}
 
 /// Status of a license according to the given config.
 enum LicenseStatus {
