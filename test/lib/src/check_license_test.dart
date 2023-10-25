@@ -47,10 +47,12 @@ class MockedPackageChecker extends Mock implements PackageChecker {
   final List<DependencyChecker> packages;
 
   @override
-  final Pubspec pubspec = Pubspec({
-    'name': 'MLB',
-    'dependencies': {'Dodgers': '1.0.0', 'Giants': '1.0.0'}
-  });
+  final Pubspec pubspec = Pubspec(
+    {
+      'name': 'MLB',
+      'dependencies': {'Dodgers': '1.0.0', 'Giants': '1.0.0'},
+    },
+  );
 
   MockedPackageChecker(this.packages);
 }
