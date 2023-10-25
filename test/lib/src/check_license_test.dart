@@ -50,7 +50,7 @@ class MockedPackageChecker extends Mock implements PackageChecker {
   final Pubspec pubspec = Pubspec(
     {
       'name': 'MLB',
-      'dependencies': {'Dodgers': '1.0.0', 'Giants': '1.0.0'}
+      'dependencies': {'Dodgers': '1.0.0', 'Giants': '1.0.0'},
     },
   );
 
