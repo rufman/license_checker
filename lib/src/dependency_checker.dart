@@ -138,6 +138,11 @@ class DependencyChecker {
 
   /// The license name associated with the package
   Future<String> get licenseName async {
+    String? overriddenLicense = config.packageLicenseOverride[name];
+    if (overriddenLicense != null) {
+      return overriddenLicense;
+    }
+
     if (licenseFile == null) {
       return noFileLicense;
     }
