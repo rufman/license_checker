@@ -57,14 +57,14 @@ void main() {
         testProperty: (d) async {
           return d.licenseName;
         },
-        expectedReturnMatcher: () => 'Apache-2.0',
+        expectedReturnMatcher: () => 'BSD-3-Clause',
         testDescription: 'should get the license name',
       ),
       DependencyTest<Object?>(
         testProperty: (d) async {
           return d.packageLicenseStatus;
         },
-        expectedReturnMatcher: () => LicenseStatus.permitted,
+        expectedReturnMatcher: () => LicenseStatus.needsApproval,
         testDescription: 'should get the license status based on the config',
       ),
       DependencyTest<Object?>(
