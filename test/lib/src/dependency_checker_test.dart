@@ -57,14 +57,14 @@ void main() {
         testProperty: (d) async {
           return d.licenseName;
         },
-        expectedReturnMatcher: () => 'Apache-2.0',
+        expectedReturnMatcher: () => 'BSD-3-Clause',
         testDescription: 'should get the license name',
       ),
       DependencyTest<Object?>(
         testProperty: (d) async {
           return d.packageLicenseStatus;
         },
-        expectedReturnMatcher: () => LicenseStatus.permitted,
+        expectedReturnMatcher: () => LicenseStatus.needsApproval,
         testDescription: 'should get the license status based on the config',
       ),
       DependencyTest<Object?>(
@@ -80,6 +80,45 @@ void main() {
         },
         expectedReturnMatcher: () => 'https://chavez.ravine',
         testDescription: 'should return the location of the source',
+      ),
+    ];
+
+    for (DependencyTest<Object?> t in _validTests) {
+      test(t.testDescription, () async {
+        expect(await t.testProperty(dc), t.expectedReturnMatcher());
+      });
+    }
+  });
+  group('license override', () {
+    Config config = Config.fromFile(
+      File('test/lib/src/fixtures/valid_config_license_override.yaml'),
+    );
+    DependencyChecker dc = DependencyChecker(
+      config: config,
+      package: Package(
+        'dodgers',
+        Uri(
+          scheme: 'file',
+          path: Directory.current.absolute.path +
+              '/test/lib/src/fixtures/dodgers/',
+        ),
+      ),
+    );
+
+    List<DependencyTest<Object?>> _validTests = [
+      DependencyTest<Object?>(
+        testProperty: (d) async {
+          return d.licenseName;
+        },
+        expectedReturnMatcher: () => 'BSD-3-Clause',
+        testDescription: 'should get the license name',
+      ),
+      DependencyTest<Object?>(
+        testProperty: (d) async {
+          return d.packageLicenseStatus;
+        },
+        expectedReturnMatcher: () => LicenseStatus.permitted,
+        testDescription: 'should get the license status based on the config',
       ),
     ];
 

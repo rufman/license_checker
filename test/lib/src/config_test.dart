@@ -123,7 +123,7 @@ void main() {
       _ConfigSuccessTest(
         testDescription: 'Parse valid config with license overrides',
         fileName: 'valid_config_license_override',
-        expectedPermittedLicenses: ['Apache-2.0', 'BSD-3-Clause'],
+        expectedPermittedLicenses: ['BSD-3-Clause'],
         expectedRejectedLicenses: ['MIT'],
         expectedApprovedPackages: {
           'GPL-1.0': ['mlb'],
