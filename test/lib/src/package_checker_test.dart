@@ -7,31 +7,31 @@ import 'package:license_checker/src/config.dart';
 import 'package:license_checker/src/package_checker.dart';
 
 void main() {
-  Config _config =
+  Config config =
       Config.fromFile(File('test/lib/src/fixtures/valid_config.yaml'));
 
   test('should properly create a PackageChecker with all proper attributes',
       () async {
-    Pubspec _pubspec = Pubspec.parseYaml(
+    Pubspec pubspec = Pubspec.parseYaml(
       await File('test/lib/src/fixtures/dodgers/pubspec.yaml').readAsString(),
     );
     PackageChecker pc = await PackageChecker.fromDirectory(
       directory: Directory('test/lib/src/fixtures/dodgers'),
-      config: _config,
+      config: config,
     );
     expect(
       pc.packages.map((p) => p.name),
       containsAll(['padres', 'as', 'angeles', 'mlb']),
     );
-    expect(pc.config, _config);
-    expect(pc.pubspec.name, _pubspec.name);
+    expect(pc.config, config);
+    expect(pc.pubspec.name, pubspec.name);
   });
 
   test('should load package checker from the current directory', () async {
     PackageChecker pc =
-        await PackageChecker.fromCurrentDirectory(config: _config);
+        await PackageChecker.fromCurrentDirectory(config: config);
     expect(pc.pubspec.name, 'license_checker');
-    expect(pc.config, _config);
+    expect(pc.config, config);
   });
 
   test('should throw an exception when no pubspec.yaml is found', () {
@@ -39,7 +39,7 @@ void main() {
       () async {
         await PackageChecker.fromDirectory(
           directory: Directory('test/lib/src/fixtures/padres'),
-          config: _config,
+          config: config,
         );
       },
       throwsA(
@@ -58,7 +58,7 @@ void main() {
       () async {
         await PackageChecker.fromDirectory(
           directory: Directory('test/lib/src/fixtures/angeles'),
-          config: _config,
+          config: config,
         );
       },
       throwsA(
