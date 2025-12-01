@@ -174,8 +174,7 @@ void main() {
         copyright: '2022 Los Angeles',
         sourceLocation: 'https://chavez.ravine',
         licenseFile: File(
-          Directory.current.absolute.path +
-              '/test/lib/src/fixtures/dodgers/LICENSE',
+          '${Directory.current.absolute.path}/test/lib/src/fixtures/dodgers/LICENSE',
         ),
       );
       String s = strBuff.toString();

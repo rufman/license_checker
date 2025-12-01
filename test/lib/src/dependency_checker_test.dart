@@ -7,14 +7,14 @@ import 'package:test/test.dart';
 import 'package:license_checker/src/config.dart';
 import 'package:license_checker/src/dependency_checker.dart';
 
-typedef _PropertyGetter<T> = FutureOr<T> Function(
+typedef PropertyGetter<T> = FutureOr<T> Function(
   DependencyChecker dependencyChecker,
 );
-typedef _ReturnMatcher<M> = M Function();
+typedef ReturnMatcher<M> = M Function();
 
 class DependencyTest<R> {
-  final _PropertyGetter<R> testProperty;
-  final _ReturnMatcher<R> expectedReturnMatcher;
+  final PropertyGetter<R> testProperty;
+  final ReturnMatcher<R> expectedReturnMatcher;
   final String testDescription;
 
   DependencyTest({
@@ -34,13 +34,13 @@ void main() {
         'dodgers',
         Uri(
           scheme: 'file',
-          path: Directory.current.absolute.path +
-              '/test/lib/src/fixtures/dodgers/',
+          path:
+              '${Directory.current.absolute.path}/test/lib/src/fixtures/dodgers/',
         ),
       ),
     );
 
-    List<DependencyTest<Object?>> _validTests = [
+    List<DependencyTest<Object?>> validTests = [
       DependencyTest<Object?>(
         testProperty: (d) => d.name,
         expectedReturnMatcher: () => 'dodgers',
@@ -49,8 +49,7 @@ void main() {
       DependencyTest<Object?>(
         testProperty: (d) => dc.licenseFile?.path,
         expectedReturnMatcher: () =>
-            Directory.current.absolute.path +
-            '/test/lib/src/fixtures/dodgers/LICENSE',
+            '${Directory.current.absolute.path}/test/lib/src/fixtures/dodgers/LICENSE',
         testDescription: 'should get a license file',
       ),
       DependencyTest<Object?>(
@@ -83,7 +82,7 @@ void main() {
       ),
     ];
 
-    for (DependencyTest<Object?> t in _validTests) {
+    for (DependencyTest<Object?> t in validTests) {
       test(t.testDescription, () async {
         expect(await t.testProperty(dc), t.expectedReturnMatcher());
       });
@@ -99,13 +98,13 @@ void main() {
         'dodgers',
         Uri(
           scheme: 'file',
-          path: Directory.current.absolute.path +
-              '/test/lib/src/fixtures/dodgers/',
+          path:
+              '${Directory.current.absolute.path}/test/lib/src/fixtures/dodgers/',
         ),
       ),
     );
 
-    List<DependencyTest<Object?>> _validTests = [
+    List<DependencyTest<Object?>> validTests = [
       DependencyTest<Object?>(
         testProperty: (d) async {
           return d.licenseName;
@@ -122,7 +121,7 @@ void main() {
       ),
     ];
 
-    for (DependencyTest<Object?> t in _validTests) {
+    for (DependencyTest<Object?> t in validTests) {
       test(t.testDescription, () async {
         expect(await t.testProperty(dc), t.expectedReturnMatcher());
       });
@@ -138,13 +137,13 @@ void main() {
         'angeles',
         Uri(
           scheme: 'file',
-          path: Directory.current.absolute.path +
-              '/test/lib/src/fixtures/angeles/',
+          path:
+              '${Directory.current.absolute.path}/test/lib/src/fixtures/angeles/',
         ),
       ),
     );
 
-    List<DependencyTest<Object?>> _validTests = [
+    List<DependencyTest<Object?>> validTests = [
       DependencyTest<Object?>(
         testProperty: (d) => d.name,
         expectedReturnMatcher: () => 'angeles',
@@ -185,7 +184,7 @@ void main() {
       ),
     ];
 
-    for (DependencyTest<Object?> t in _validTests) {
+    for (DependencyTest<Object?> t in validTests) {
       test(t.testDescription, () async {
         expect(await t.testProperty(dc), t.expectedReturnMatcher());
       });
@@ -202,7 +201,7 @@ void main() {
         Uri(
           scheme: 'file',
           path:
-              Directory.current.absolute.path + '/test/lib/src/fixtures/mets/',
+              '${Directory.current.absolute.path}/test/lib/src/fixtures/mets/',
         ),
       ),
     );
@@ -217,12 +216,12 @@ void main() {
         Uri(
           scheme: 'file',
           path:
-              Directory.current.absolute.path + '/test/lib/src/fixtures/mets/',
+              '${Directory.current.absolute.path}/test/lib/src/fixtures/mets/',
         ),
       ),
     );
 
-    List<DependencyTest<Object?>> _validTests = [
+    List<DependencyTest<Object?>> validTests = [
       DependencyTest<Object?>(
         testProperty: (d) => d.name,
         expectedReturnMatcher: () => 'mets',
@@ -231,8 +230,7 @@ void main() {
       DependencyTest<Object?>(
         testProperty: (d) => d.licenseFile?.path,
         expectedReturnMatcher: () =>
-            Directory.current.absolute.path +
-            '/test/lib/src/fixtures/mets/LICENSE',
+            '${Directory.current.absolute.path}/test/lib/src/fixtures/mets/LICENSE',
         testDescription: 'should return the license file',
       ),
       DependencyTest<Object?>(
@@ -260,7 +258,7 @@ void main() {
       ),
     ];
 
-    for (DependencyTest<Object?> t in _validTests) {
+    for (DependencyTest<Object?> t in validTests) {
       test(t.testDescription, () async {
         expect(await t.testProperty(dc), t.expectedReturnMatcher());
       });
@@ -276,7 +274,7 @@ void main() {
         'mlb',
         Uri(
           scheme: 'file',
-          path: Directory.current.absolute.path + '/test/lib/src/fixtures/mlb/',
+          path: '${Directory.current.absolute.path}/test/lib/src/fixtures/mlb/',
         ),
       ),
     );
@@ -290,12 +288,12 @@ void main() {
         'mlb',
         Uri(
           scheme: 'file',
-          path: Directory.current.absolute.path + '/test/lib/src/fixtures/mlb/',
+          path: '${Directory.current.absolute.path}/test/lib/src/fixtures/mlb/',
         ),
       ),
     );
 
-    List<DependencyTest<Object?>> _validTests = [
+    List<DependencyTest<Object?>> validTests = [
       DependencyTest<Object?>(
         testProperty: (d) => d.name,
         expectedReturnMatcher: () => 'mlb',
@@ -304,8 +302,7 @@ void main() {
       DependencyTest<Object?>(
         testProperty: (d) => dc.licenseFile?.path,
         expectedReturnMatcher: () =>
-            Directory.current.absolute.path +
-            '/test/lib/src/fixtures/mlb/LICENSE',
+            '${Directory.current.absolute.path}/test/lib/src/fixtures/mlb/LICENSE',
         testDescription: 'should return the license file',
       ),
       DependencyTest<Object?>(
@@ -348,7 +345,7 @@ void main() {
       ),
     ];
 
-    for (DependencyTest<Object?> t in _validTests) {
+    for (DependencyTest<Object?> t in validTests) {
       test(t.testDescription, () async {
         expect(await t.testProperty(dc), t.expectedReturnMatcher());
       });
@@ -364,13 +361,13 @@ void main() {
         'padres',
         Uri(
           scheme: 'file',
-          path: Directory.current.absolute.path +
-              '/test/lib/src/fixtures/padres/',
+          path:
+              '${Directory.current.absolute.path}/test/lib/src/fixtures/padres/',
         ),
       ),
     );
 
-    List<DependencyTest<Object?>> _validTests = [
+    List<DependencyTest<Object?>> validTests = [
       DependencyTest<Object?>(
         testProperty: (d) => d.name,
         expectedReturnMatcher: () => 'padres',
@@ -379,8 +376,7 @@ void main() {
       DependencyTest<Object?>(
         testProperty: (d) => dc.licenseFile?.path,
         expectedReturnMatcher: () =>
-            Directory.current.absolute.path +
-            '/test/lib/src/fixtures/padres/LICENSE',
+            '${Directory.current.absolute.path}/test/lib/src/fixtures/padres/LICENSE',
         testDescription: 'should return the license file',
       ),
       DependencyTest<Object?>(
@@ -418,7 +414,7 @@ void main() {
       ),
     ];
 
-    for (DependencyTest<Object?> t in _validTests) {
+    for (DependencyTest<Object?> t in validTests) {
       test(t.testDescription, () async {
         expect(await t.testProperty(dc), t.expectedReturnMatcher());
       });
