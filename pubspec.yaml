@@ -12,7 +12,7 @@ dependencies:
   colorize: ^3.0.0
   io: ^1.0.3
   package_config: ^2.0.2
-  pana: ^0.23.0
+  pana: ^0.23.8
   path: ^1.7.0
   yaml: ^3.1.0
 
